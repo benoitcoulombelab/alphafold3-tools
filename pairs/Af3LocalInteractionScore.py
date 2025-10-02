@@ -1,0 +1,107 @@
+"""
+Code of this file was copied from https://github.com/flyark/AFM-LIS.
+"""
+
+import json
+from collections import Counter
+
+import numpy as np
+
+
+def transform_pae_matrix(pae_matrix, pae_cutoff):
+  # Initialize the transformed matrix with zeros
+  transformed_pae = np.zeros_like(pae_matrix)
+
+  # Apply transformation: pae = 0 -> score = 1, pae = cutoff -> score = 0, above cutoff -> score = 0
+  # Linearly scale values between 0 and cutoff to fall between 1 and 0
+  within_cutoff = pae_matrix < pae_cutoff
+  transformed_pae[within_cutoff] = 1 - (pae_matrix[within_cutoff] / pae_cutoff)
+
+  return transformed_pae
+
+
+def calculate_mean_lis(transformed_pae, subunit_number):
+  # Calculate the cumulative sum of protein lengths to get the end indices of the submatrices
+  cum_lengths = np.cumsum(subunit_number)
+
+  # Add a zero at the beginning of the cumulative lengths to get the start indices
+  start_indices = np.concatenate(([0], cum_lengths[:-1]))
+
+  # Initialize an empty matrix to store the mean LIS
+  mean_lis_matrix = np.zeros((len(subunit_number), len(subunit_number)))
+
+  # Iterate over the start and end indices
+  for i in range(len(subunit_number)):
+    for j in range(len(subunit_number)):
+      # Get the start and end indices of the interaction submatrix
+      start_i, end_i = start_indices[i], cum_lengths[i]
+      start_j, end_j = start_indices[j], cum_lengths[j]
+
+      # Get the interaction submatrix
+      submatrix = transformed_pae[start_i:end_i, start_j:end_j]
+
+      # Calculate the mean LIS, considering only non-zero values
+      mean_lis = submatrix[submatrix > 0].mean()
+
+      # Store the mean LIS in the matrix
+      mean_lis_matrix[i, j] = mean_lis
+
+  return mean_lis_matrix
+
+
+def local_interaction_score(af3_json: str, pae_cutoff: float = 12,
+    subunit_one: int = 0, subunit_two: int = 1):
+  """
+  Returns local interaction score between first subunit and second subunit as defined in this paper:
+  https://www.biorxiv.org/content/10.1101/2024.02.19.580970v1
+
+  Returned value is a tuple of LIS and LIA score.
+
+  :param af3_json: path to either '*_full_data_?.json' or '*_confidences.json' file.
+  :param pae_cutoff: cutoff for PAE values
+  :param subunit_one: identifier of first subunit
+  :param subunit_two: identifier of second subunit
+  :return: local interaction score between first subunit and second subunit
+  """
+  json_data = json.load(open(af3_json, 'rb'))
+
+  token_chain_ids = json_data['token_chain_ids']
+  chain_residue_counts = Counter(token_chain_ids)
+  subunit_number = list(chain_residue_counts.values())
+  pae_matrix = np.array(json_data['pae'], dtype=float)
+  pae_matrix = np.nan_to_num(pae_matrix)
+
+  # ----------------------------------------------
+  # 2) Transform PAE matrix => LIS
+  # ----------------------------------------------
+  transformed_pae_matrix = transform_pae_matrix(pae_matrix, pae_cutoff)
+  transformed_pae_matrix = np.nan_to_num(transformed_pae_matrix)
+
+  # A binary map (1 where LIS>0, else 0)
+  lia_map = np.where(transformed_pae_matrix > 0, 1, 0)
+
+  mean_lis_matrix = calculate_mean_lis(transformed_pae_matrix, subunit_number)
+  mean_lis_matrix = np.nan_to_num(mean_lis_matrix)
+
+  # ----------------------------------------------
+  # 4) Count-based metrics: LIA, LIR, cLIA, cLIR
+  #    plus local (per-subunit) residue indices
+  # ----------------------------------------------
+  subunit_count = len(subunit_number)
+  lia_matrix = np.zeros((subunit_count, subunit_count), dtype=int)
+
+  # For extracting submatrices
+  cum_lengths = np.cumsum(subunit_number)
+  starts = np.concatenate(([0], cum_lengths[:-1]))
+
+  # subunit one spans [start_one, end_one), subunit two spans [start_two, end_two)
+  start_one, end_one = starts[subunit_one], cum_lengths[subunit_one]
+  start_two, end_two = starts[subunit_two], cum_lengths[subunit_two]
+
+  # Submatrix for LIS-based local interactions (binary)
+  interaction_submatrix = lia_map[start_one:end_one, start_two:end_two]
+  lia_matrix[subunit_one, subunit_two] = np.count_nonzero(
+      interaction_submatrix)
+
+  return (mean_lis_matrix[subunit_one, subunit_two],
+          lia_matrix[subunit_one, subunit_two])

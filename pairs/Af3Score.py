@@ -8,6 +8,8 @@ from typing import TextIO
 
 import tqdm
 
+from pairs import Af3LocalInteractionScore
+
 
 class Confidence:
   def __init__(self, iptm: float,
@@ -24,7 +26,7 @@ def dir_path(string: str):
     raise NotADirectoryError(string)
 
 
-METRICS = ["iptm", "ptm", "ranking_score"]
+METRICS = ["iptm", "ptm", "ranking_score", "lis"]
 
 
 def main(argv: list[str] = None):
@@ -65,7 +67,7 @@ def main(argv: list[str] = None):
 
 def af3_score(input_dir: str = "",
     output_file: TextIO = sys.stdout, name: str = r"([\w-]+)__([\w-]+)",
-    metrics: [str] = [METRICS[0]], progress: bool = False,
+    metrics: list[str] = [METRICS[0]], progress: bool = False,
     mapping_file: TextIO = None, source_column: int = 0,
     converted_column: int = 1):
   """
@@ -101,6 +103,8 @@ def af3_score(input_dir: str = "",
       output_file.write("\tpTM")
     elif "ranking_score" == metric:
       output_file.write("\tRanking score")
+    elif "lis" == metric:
+      output_file.write("\tLIS\tLIA")
   output_file.write("\n")
   for confidence_file in (
       tqdm.tqdm(confidence_files) if progress else confidence_files):
@@ -120,6 +124,11 @@ def af3_score(input_dir: str = "",
         output_file.write(f"\t{confidence.ptm}")
       elif "ranking_score" == metric:
         output_file.write(f"\t{confidence.ranking_score}")
+      elif "lis" == metric:
+        lis_json = confidence_file.replace("_summary_confidences.json",
+                                           "_confidences.json")
+        lis, lia = Af3LocalInteractionScore.local_interaction_score(lis_json)
+        output_file.write(f"\t{lis}\t{lia}")
     output_file.write("\n")
 
 
