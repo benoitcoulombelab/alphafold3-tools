@@ -18,7 +18,7 @@ setup(
       "numpy>=1.26.0",
       "pandas>=2.1.0",
       "smokesignal>=0.7",
-      "tqdm>=4.66.1"
+      "tqdm>=4.66.3"
     ],
     entry_points={
       "console_scripts": [
