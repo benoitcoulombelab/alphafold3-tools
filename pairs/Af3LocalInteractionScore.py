@@ -115,8 +115,8 @@ def calculate_contact_map(cif_file, distance_threshold: float = 8):
   return contact_map
 
 
-def local_interaction_score(af3_json: str, pae_cutoff: float = 12,
-    distance_cutoff: float = 8,
+def local_interaction_score(af3_json: str, af3_structure: str,
+    pae_cutoff: float = 12, distance_cutoff: float = 8,
     subunit_one: int = 0, subunit_two: int = 1):
   """
   Returns local interaction score between first subunit and second subunit as defined in this paper:
@@ -125,7 +125,9 @@ def local_interaction_score(af3_json: str, pae_cutoff: float = 12,
   Returned value is a tuple of iLIS, LIS and LIA score.
 
   :param af3_json: path to either '*_full_data_?.json' or '*_confidences.json' file.
+  :param af3_structure: path to '*.cif' file that matches the af3_json file.
   :param pae_cutoff: cutoff for PAE values
+  :param distance_cutoff: cutoff for distance between residues when computing local interaction score
   :param subunit_one: identifier of first subunit
   :param subunit_two: identifier of second subunit
   :return: local interaction score between first subunit and second subunit
@@ -153,8 +155,7 @@ def local_interaction_score(af3_json: str, pae_cutoff: float = 12,
   # ----------------------------------------------
   # 3) Contact map => cLIA
   # ----------------------------------------------
-  cif_file = af3_json.replace('_full_data_', '_model_').replace('.json', '.cif')
-  contact_map = calculate_contact_map(cif_file, distance_cutoff)
+  contact_map = calculate_contact_map(af3_structure, distance_cutoff)
 
   combined_map = np.where(
       (transformed_pae_matrix > 0) & (contact_map == 1),

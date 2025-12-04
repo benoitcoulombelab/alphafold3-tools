@@ -127,8 +127,10 @@ def af3_score(input_dir: str = "",
       elif "lis" == metric:
         lis_json = confidence_file.replace("_summary_confidences.json",
                                            "_confidences.json")
+        structure = confidence_file.replace("_summary_confidences.json",
+                                            "_model.cif")
         i_lis, lis, lia = Af3LocalInteractionScore.local_interaction_score(
-          lis_json)
+            lis_json, structure)
         output_file.write(f"\t{i_lis}\t{lis}\t{lia}")
     output_file.write("\n")
 
