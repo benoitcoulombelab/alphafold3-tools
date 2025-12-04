@@ -6,6 +6,8 @@ import json
 from collections import Counter
 
 import numpy as np
+import pandas as pd
+from scipy.spatial.distance import pdist, squareform
 
 
 def transform_pae_matrix(pae_matrix, pae_cutoff):
@@ -49,13 +51,78 @@ def calculate_mean_lis(transformed_pae, subunit_number):
   return mean_lis_matrix
 
 
+def calculate_contact_map(cif_file, distance_threshold: float = 8):
+  def read_cif_lines(cif_path):
+    with open(cif_path, 'r') as file:
+      lines = file.readlines()
+
+    residue_lines = []
+    for line in lines:
+      if line.startswith('ATOM') and (
+          'CB' in line or 'GLY' in line and 'CA' in line):
+        residue_lines.append(
+            line.strip())  # Store the line if it meets the criteria for ATOM
+
+      if line.startswith('ATOM') and 'P   ' in line:
+        residue_lines.append(
+            line.strip())  # Store the line if it meets the criteria for ATOM
+
+      elif line.startswith('HETATM'):
+        residue_lines.append(line.strip())  # Store all HETATM lines
+
+    return residue_lines
+
+  def lines_to_dataframe(residue_lines):
+    # Split lines and create a list of dictionaries for each atom
+    data = []
+    for line in residue_lines:
+      parts = line.split()
+      # Correctly convert numerical values
+      for i in range(len(parts)):
+        try:
+          parts[i] = float(parts[i])
+        except ValueError:
+          pass
+      data.append(parts)
+
+    df = pd.DataFrame(data)
+
+    # Add line number column
+    df.insert(0, 'residue', range(1, 1 + len(df)))
+
+    return df
+
+  # Read lines from CIF file
+  residue_lines = read_cif_lines(cif_file)
+
+  # Convert lines to DataFrame
+  df = lines_to_dataframe(residue_lines)
+
+  # Assuming the columns for x, y, z coordinates are at indices 11, 12, 13 after insertion
+  coordinates = df.iloc[:, 11:14].to_numpy()
+
+  distances = squareform(pdist(coordinates))
+
+  # Assuming the column for atom names is at index 3 after insertion
+  has_phosphorus = df.iloc[:, 3].apply(lambda x: 'P' in str(x)).to_numpy()
+
+  # Adjust the threshold for phosphorus-containing residues
+  adjusted_distances = np.where(
+      has_phosphorus[:, np.newaxis] | has_phosphorus[np.newaxis, :],
+      distances - 4, distances)
+
+  contact_map = np.where(adjusted_distances < distance_threshold, 1, 0)
+  return contact_map
+
+
 def local_interaction_score(af3_json: str, pae_cutoff: float = 12,
+    distance_cutoff: float = 8,
     subunit_one: int = 0, subunit_two: int = 1):
   """
   Returns local interaction score between first subunit and second subunit as defined in this paper:
   https://www.biorxiv.org/content/10.1101/2024.02.19.580970v1
 
-  Returned value is a tuple of LIS and LIA score.
+  Returned value is a tuple of iLIS, LIS and LIA score.
 
   :param af3_json: path to either '*_full_data_?.json' or '*_confidences.json' file.
   :param pae_cutoff: cutoff for PAE values
@@ -84,6 +151,20 @@ def local_interaction_score(af3_json: str, pae_cutoff: float = 12,
   mean_lis_matrix = np.nan_to_num(mean_lis_matrix)
 
   # ----------------------------------------------
+  # 3) Contact map => cLIA
+  # ----------------------------------------------
+  cif_file = af3_json.replace('_full_data_', '_model_').replace('.json', '.cif')
+  contact_map = calculate_contact_map(cif_file, distance_cutoff)
+
+  combined_map = np.where(
+      (transformed_pae_matrix > 0) & (contact_map == 1),
+      transformed_pae_matrix,
+      0
+  )
+  mean_clis_matrix = calculate_mean_lis(combined_map, subunit_number)
+  mean_clis_matrix = np.nan_to_num(mean_clis_matrix)
+
+  # ----------------------------------------------
   # 4) Count-based metrics: LIA, LIR, cLIA, cLIR
   #    plus local (per-subunit) residue indices
   # ----------------------------------------------
@@ -103,5 +184,9 @@ def local_interaction_score(af3_json: str, pae_cutoff: float = 12,
   lia_matrix[subunit_one, subunit_two] = np.count_nonzero(
       interaction_submatrix)
 
-  return (mean_lis_matrix[subunit_one, subunit_two],
+  i_lis = np.sqrt(
+      mean_lis_matrix[subunit_one, subunit_two] * mean_clis_matrix[
+        subunit_one, subunit_two])
+
+  return (i_lis, mean_lis_matrix[subunit_one, subunit_two],
           lia_matrix[subunit_one, subunit_two])

@@ -104,7 +104,7 @@ def af3_score(input_dir: str = "",
     elif "ranking_score" == metric:
       output_file.write("\tRanking score")
     elif "lis" == metric:
-      output_file.write("\tLIS\tLIA")
+      output_file.write("\tiLIS\tLIS\tLIA")
   output_file.write("\n")
   for confidence_file in (
       tqdm.tqdm(confidence_files) if progress else confidence_files):
@@ -127,8 +127,9 @@ def af3_score(input_dir: str = "",
       elif "lis" == metric:
         lis_json = confidence_file.replace("_summary_confidences.json",
                                            "_confidences.json")
-        lis, lia = Af3LocalInteractionScore.local_interaction_score(lis_json)
-        output_file.write(f"\t{lis}\t{lia}")
+        i_lis, lis, lia = Af3LocalInteractionScore.local_interaction_score(
+          lis_json)
+        output_file.write(f"\t{i_lis}\t{lis}\t{lia}")
     output_file.write("\n")
 
 
