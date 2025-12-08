@@ -43,7 +43,8 @@ def calculate_mean_lis(transformed_pae, subunit_number):
       submatrix = transformed_pae[start_i:end_i, start_j:end_j]
 
       # Calculate the mean LIS, considering only non-zero values
-      mean_lis = submatrix[submatrix > 0].mean()
+      mean_lis = submatrix[submatrix > 0].mean() if submatrix[
+        submatrix > 0].any() else 0
 
       # Store the mean LIS in the matrix
       mean_lis_matrix[i, j] = mean_lis
@@ -157,11 +158,14 @@ def local_interaction_score(af3_json: str, af3_structure: str,
   # ----------------------------------------------
   contact_map = calculate_contact_map(af3_structure, distance_cutoff)
 
-  combined_map = np.where(
-      (transformed_pae_matrix > 0) & (contact_map == 1),
-      transformed_pae_matrix,
-      0
-  )
+  try:
+    combined_map = np.where(
+        (transformed_pae_matrix > 0) & (contact_map == 1),
+        transformed_pae_matrix,
+        0
+    )
+  except ValueError:
+    combined_map = np.empty(transformed_pae_matrix.shape)
   mean_clis_matrix = calculate_mean_lis(combined_map, subunit_number)
   mean_clis_matrix = np.nan_to_num(mean_clis_matrix)
 
