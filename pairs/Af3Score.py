@@ -3,6 +3,7 @@ import glob
 import json
 import os
 import re
+import statistics
 import sys
 from typing import TextIO
 
@@ -26,7 +27,7 @@ def dir_path(string: str):
     raise NotADirectoryError(string)
 
 
-METRICS = ["iptm", "ptm", "ranking_score", "lis"]
+METRICS = ["iptm", "ptm", "ranking_score", "lis", "best_lis"]
 
 
 def main(argv: list[str] = None):
@@ -105,6 +106,8 @@ def af3_score(input_dir: str = "",
       output_file.write("\tRanking score")
     elif "lis" == metric:
       output_file.write("\tiLIS\tLIS\tLIA")
+    elif "best_lis" == metric:
+      output_file.write("\tBest iLIS\tBest LIS\tBest LIA")
   output_file.write("\n")
   for confidence_file in (
       tqdm.tqdm(confidence_files) if progress else confidence_files):
@@ -125,6 +128,23 @@ def af3_score(input_dir: str = "",
       elif "ranking_score" == metric:
         output_file.write(f"\t{confidence.ranking_score}")
       elif "lis" == metric:
+        model_confidence_files = (
+          glob.glob("**/confidences.json",
+                    root_dir=os.path.dirname(confidence_file), recursive=True))
+        model_confidence_files = [
+          os.path.join(os.path.dirname(confidence_file), model_confidence_file)
+          for model_confidence_file in model_confidence_files]
+        structure_files = [
+          model_confidence_file.replace("confidences.json", "model.cif") for
+          model_confidence_file in model_confidence_files]
+        model_lis = [Af3LocalInteractionScore.local_interaction_score(
+            model_confidence_files[i], structure_files[i]) for i in
+          range(0, len(model_confidence_files))]
+        i_lis = statistics.mean([m_lis[0] for m_lis in model_lis])
+        lis = statistics.mean([m_lis[1] for m_lis in model_lis])
+        lia = statistics.mean([m_lis[2] for m_lis in model_lis])
+        output_file.write(f"\t{i_lis}\t{lis}\t{lia}")
+      elif "best_lis" == metric:
         lis_json = confidence_file.replace("_summary_confidences.json",
                                            "_confidences.json")
         structure = confidence_file.replace("_summary_confidences.json",
