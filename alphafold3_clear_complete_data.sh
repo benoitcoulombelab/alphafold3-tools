@@ -71,7 +71,7 @@ process_json() {
   json_filename="${json_filename%.*}"
   json_filename=$(tr "[:upper:]" "[:lower:]" <<< "$json_filename")
   local output_json="${data_folder}/${json_filename}/${json_filename}_data.json"
-  if [[ -f "$output_json" ]]
+  if [[ -s "$output_json" ]]
   then
     python -mjson.tool "$output_json" > /dev/null 2>&1
     local json_validation=$?
