@@ -10,7 +10,4 @@ fi
 
 python3 -m venv ./pairs-env
 source ./pairs-env/bin/activate
-pip install git+https://github.com/benoitcoulombelab/pairs.git@main
-
-echo "Activate pairs virtual environment:"
-echo "source pairs-env/bin/activate"
+pip install .

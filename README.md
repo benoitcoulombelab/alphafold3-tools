@@ -1,209 +1,91 @@
-# PAIRS
+# [AlphaFold 3](https://github.com/google-deepmind/alphafold3) Tools
 
-![PAIRS - Built using AlphaFold - Logo](pairs.png)
+Tools to run [AlphaFold 3](https://github.com/google-deepmind/alphafold3) using [Nextflow](https://www.nextflow.io) on [Alliance Canada](https://www.alliancecan.ca) servers.
 
-### This software scores protein-protein interactions using AlphaFold-Multimer's output
+To install the tools on Alliance Canada servers, see [INSTALL.md](INSTALL.md)
 
-[See PAIRS paper](https://www.biorxiv.org/content/10.1101/2023.08.29.555151v1)
+### Steps
 
-#### Contents
+1. [Prepare working environment](#Prepare-working-environment)
+   1. [Set additional variables](#Set-additional-variables)
+2. [Running AlphaFold 3](#Running-AlphaFold-3)
+   1. [Prepare JSON files](#prepare-fasta-files)
+   2. [Data step](#Data-step)
+   3. [Inference step](#Inference-step)
+3. [Scoring protein-protein interactions](#Scoring-protein-protein-interactions)
 
-* [Install PAIRS](#install)
-* [Running PAIRS](#running-pairs)
-    * [Prepare FASTA files](#prepare-fasta-files)
-        * [Proteins with an ambigous amino acid](proteins-with-an-ambigous-amino-acid)
-    * [Running AlphaFold-Multimer using Nextflow](#running-alphafold-multimer-using-nextflow)
-    * [Scoring protein-protein interactions](#scoring-protein-protein-interactions)
-* [Configuring AlphaFold-Multimer](#configuring-alphafold-multimer)
-    * [Patching AlphaFold-Multimer](#patching-alphafold-multimer)
-        * [Running only prepare or alphafold step](#running-only-prepare-or-alphafold-step)
-    * [Alternative to patching AlphaFold-Multimer](#alternative-to-patching-alphafold-multimer)
-* [Protein complexes](#protein-complexes)
-    * [Interaction scores matrix](#interaction-scores-matrix)
-    * [Zscore matrix](#zscore-matrix)
-* [Extract interfaces of a protein-protein interaction](#extract-interfaces-of-a-protein-protein-interaction)
-    * [Consensus interface](#consensus-interface)
-* [Utilities](#utilities)
-    * [Split FASTA file](#split-fasta-file)
+## Prepare working environment
 
-## Install
-
-Install requirements:
-
-* [python version 3.7.4 or newer](https://www.python.org)
-* [Git](https://git-scm.com)
-
-Install PAIRS.
+Source the AlphaFold 3 tools init script.
 
 ```shell
-pip install git+https://github.com/benoitcoulombelab/pairs.git
+source /project/def-coulomb/scripts/alphafold3-tools/alphafold3-init.sh
 ```
 
-## Running PAIRS
+### Set additional variables
 
-### Prepare FASTA files
-
-If you have multiple baits or targets, you can use the `fasta-pairs` script.
+> [!IMPORTANT]
+> Change `$SCRATCH/alphafold/dbs` by the actual AlphaFold's database folder.
 
 ```shell
-mkdir fasta_pairs
-fasta-pairs --baits baits.fasta --targets targets.fasta --output fasta_pairs -u -i
+database=$SCRATCH/alphafold/dbs
 ```
 
-#### Proteins with an ambigous amino acid
-
-AlphaFold does not work with proteins that have an ambigus amino acid.
-
-You can delete FASTA files containing an ambigous amino acid using the following command:
+> [!IMPORTANT]
+> Change `def-coulomb` by the actual account on which to run Nextflow.
 
 ```shell
-delete-fasta -s fasta_pairs/*.fasta
+account=def-coulomb
 ```
 
-To move the FASTA files instead of deleting them:
+## Running AlphaFold 3
+
+### Prepare JSON files
 
 ```shell
-delete-fasta -s -b backup_folder fasta_pairs/*.fasta
+mkdir json
+fasta-pairs --baits baits.fasta --targets targets.fasta --output json -u -i
 ```
 
-### Running AlphaFold-Multimer using Nextflow
+### Data step
 
 ```shell
-nextflow run pairs.nf \
-    --fasta 'fasta_pairs/*.fasta' \
-    --outdir "$PWD/output"
+nextflow run alphafold3_data.nf \
+    -c alphafold3.config \
+    --fasta 'json/*.json' \
+    --database $database \
+    --account $account \
+    -process.errorStrategy ignore
 ```
 
-### Scoring protein-protein interactions
+When running multiple proteins pairs, chances are high that some jobs will fail.
+Before relaunching the data step, remove any JSON file that completed normally.
 
 ```shell
-multi-interaction-score -w \
+bash alphafold3_clear_complete_data.sh
+```
+
+Then relaunch the data step using the same command, see [Data step](#Data-step)
+
+### Inference step
+
+```shell
+nextflow run alphafold3_inference.nf \
+    --json 'data/*.json' \
+    --database $database \
+    --account $account \
+    -process.errorStrategy ignore
+```
+
+## Scoring protein-protein interactions
+
+For ipTM, pTM and ranking scores, see [Confidence Metrics for AlphaFold 3](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md#confidence-metrics)
+
+For LIS and Best LIS scores, see [AFM-LIS](https://github.com/flyark/AFM-LIS)
+
+```shell
+af3-scores \
+    -i structures \
     -o interaction-scores.txt \
-    output/alphafold/**/ranked_o.pdb
-```
-
-For a single interaction:
-
-```shell
-interaction-score -w ranked_o.pdb
-```
-
-## Configuring AlphaFold-Multimer
-
-The Nextflow pipeline relies on a script called `alphafold.sh` in the current directory to run
-AlphaFold.
-
-An example of an implementation of this script using [Slurm](https://slurm.schedmd.com) is provided
-in the [alphafold.sh](alphafold.sh) file.
-
-### Patching AlphaFold-Multimer
-
-The default Nextflow pipline expects to run AlphaFold in two steps.
-
-1. Prepare
-    * Run external programs to produce AlphaFold's input
-    * Uses 8 CPUs and no GPU
-2. AlphaFold
-    * Run AlphaFold-mutlimer's AI program based on "prepare's" output
-    * Uses 1 CPU and 1 GPU
-
-To make it possible to run the "prepare" step separately, you must patch AlphaFold using the patch
-file available here:
-[Patches for AlphaFold](https://github.com/benoitcoulombelab/modules/tree/main/alphafold)
-
-#### Running only prepare or alphafold step
-
-```shell
-nextflow run pairs.nf \
-    --step prepare \
-    --fasta 'fasta_pairs/*.fasta' \
-    --outdir "$PWD/output"
-```
-
-```shell
-nextflow run pairs.nf \
-    --step alphafold \
-    --fasta 'fasta_pairs/*.fasta' \
-    --outdir "$PWD/output"
-```
-
-This will allow you to optimize both steps independently to optimize HPC usage.
-
-### Alternative to patching AlphaFold-Multimer
-
-If you don't care about optimizing CPU/GPU usage, you can run the alternative pipeline that will run
-AlphaFold normally (without patching).
-
-```shell
-nextflow run pairs-noprepare.nf \
-    --fasta 'fasta_pairs/*.fasta' \
-    --outdir "$PWD/output"
-```
-
-## Protein complexes
-
-To find all binary protein-protein interactions of a complex, start by running the normal PAIRS
-pipeline.
-[Running PAIRS](#running-pairs)
-
-Once AlphaFold-Multimer completes for all FASTA files, use `multi-interaction-score` script.
-
-```shell
-multi-interaction-score -w \
-    -o interaction-scores.txt \
-    output/alphafold/**/ranked_o.pdb
-```
-
-### Interaction scores matrix
-
-You can generate a matrix of protein-protein interaction scores using:
-
-```shell
-score-matrix -o score-matrix.txt -u \
-    interaction-scores.txt
-```
-
-### Zscore matrix
-
-You can also compute Zscores when generating the protein-protein interaction scores matrix:
-
-```shell
-score-matrix -o score-matrix.txt -u -z \
-    interaction-scores.txt
-```
-
-## Extract interfaces of a protein-protein interaction
-
-You can extract the interface(s) of a protein-protein interaction using `interaction-score`.
-
-```shell
-interaction-score -r 6 -R residue-pairs.txt -A atom-pairs.txt ranked_0.pdb
-```
-
-* The `residue-pairs.txt` file contains the residue-pairs that have an atom at a distance below the
-  radius (`-s` parameter).
-* The `atom-pairs.txt` file contains the atoms-pairs that are at a distance below the radius (`-s`
-  parameter).
-
-### Consensus interface
-
-If you analyse similar bait-target pairs, you may want to extract a consensus interface.
-
-```shell
-consensus-interface -r residue-pairs/*.txt -o consensus-residue-pairs.txt \
-    -c 0.5 -n "([\w-]+)__([\w-]+)" \
-    -b aligned_baits.txt -t aligned_targets.txt -f clustal
-```
-
-Since baits and targets may slightly differ in their sequence, you can provide an alignment file to
-adjust the index of the residues in different baits/targets.
-
-## Utilities
-
-### Split FASTA file
-
-To split a FASTA file into a single file per sequence:
-
-```shell
-split-fasta -o fasta_per_sequence sequence.fasta
+    -m iptm,lis
 ```
