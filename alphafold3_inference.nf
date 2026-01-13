@@ -32,7 +32,7 @@ process model_inference {
   script:
   """
   mkdir -p structures
-  cp $baseDir/run_alphafold.py .
-  bash $baseDir/alphafold3_inference.sh ${json} structures ${params.database} ${params.models}
+  cp \$SCRIPT_PATH/run_alphafold.py .
+  bash \$SCRIPT_PATH/alphafold3_inference.sh ${json} structures ${params.database} ${params.models}
   """
 }

@@ -50,8 +50,7 @@ fasta-pairs --baits baits.fasta --targets targets.fasta --output json -u -i
 ### Data step
 
 ```shell
-sbatch nextflow.sh run alphafold3_data.nf \
-    -c alphafold3.config \
+sbatch nextflow-data.sh \
     --fasta 'json/*.json' \
     --database $database \
     --account $account \
@@ -70,7 +69,7 @@ Then relaunch the data step using the same command, see [Data step](#Data-step)
 ### Inference step
 
 ```shell
-sbatch nextflow.sh run alphafold3_inference.nf \
+sbatch nextflow-inference.sh \
     --json 'data/*.json' \
     --database $database \
     --account $account \

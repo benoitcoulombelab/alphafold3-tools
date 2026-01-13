@@ -8,8 +8,8 @@
    2. [Clone repository](#Clone-repository)
 3. [Updating scripts](#Updating-scripts)
 4. [After installing or updating the scripts](#After-installing-or-updating-the-scripts)
-   1. [Creating python virtual environment for nf-core](#Creating-python-virtual-environment-for-nf-core)
-   2. [Downloading containers used by nf-core](#Downloading-containers-used-by-nf-core)
+   1. [Download scripts from AlphaFold 3](#Download-scripts-from-AlphaFold-3)
+   2. [Creating python virtual environment for pairs](#Creating-python-virtual-environment-for-pairs)
 
 ## Prepare working environment
 
@@ -50,6 +50,12 @@ Move to AlphaFold 3 tools scripts directory. See [Prepare working environment](#
 
 ```shell
 cd $tools
+```
+
+### Download scripts from AlphaFold 3
+
+```shell
+wget https://raw.githubusercontent.com/google-deepmind/alphafold3/refs/heads/main/fetch_databases.sh
 ```
 
 ### Creating python virtual environment for pairs

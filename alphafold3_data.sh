@@ -40,7 +40,7 @@ then
 
   # Install alphafold and its dependencies
   pip install --no-index --upgrade pip
-  pip install --no-index --requirement ~/alphafold3-requirements.txt
+  pip install --no-index --requirement "$SCRIPT_PATH"/alphafold3-requirements.txt
 
   # build data in $VIRTUAL_ENV
   build_data
