@@ -11,6 +11,7 @@ set -e
 
 json_folder=json
 data_folder=data
+threads=${SLURM_CPUS_PER_TASK:-1}
 
 # Usage function
 usage() {
@@ -18,17 +19,21 @@ usage() {
   echo "Usage: alphafold3_clear_complete_data.sh [-j json] [-d data]"
   echo "  -j: Folder containing JSON input files for alphafold3_data  (default: json)"
   echo "  -d: Folder containing JSON output files from alphafold3_data  (default: data)"
+  echo "  -t: Number of threads (default: 1 or SLURM_CPUS_PER_TASK if present)"
   echo "  -h: Show this help"
 }
 
 # Parsing arguments.
-while getopts 'j:d:h' OPTION; do
+while getopts 'j:d:t:h' OPTION; do
   case "$OPTION" in
     j)
        json_folder="$OPTARG"
        ;;
     d)
        data_folder="$OPTARG"
+       ;;
+    t)
+       threads="$OPTARG"
        ;;
     h)
        usage
@@ -55,6 +60,12 @@ fi
 if ! [[ -d "$data_folder" ]]
 then
   >&2 echo "Error: -d parameter '$data_folder' is not a directory."
+  usage
+  exit 1
+fi
+if ! [[ "$threads" =~ ^[0-9]+$ ]]
+then
+  >&2 echo "Error: -t parameter '$threads' is not an integer."
   usage
   exit 1
 fi
@@ -85,4 +96,4 @@ process_json() {
 export -f process_json
 
 find "$json_folder" -name "*.json" \
- | parallel --env process_json process_json "$json_folder" "$data_folder"
+ | parallel --jobs "$threads" --env process_json process_json "$json_folder" "$data_folder"
