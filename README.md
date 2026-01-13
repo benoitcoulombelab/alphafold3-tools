@@ -90,10 +90,11 @@ interaction-score -w ranked_o.pdb
 
 ## Configuring AlphaFold-Multimer
 
-The Nextflow pipeline relies on a script called `alphafold.sh` in the current directory to run AlphaFold.
+The Nextflow pipeline relies on a script called `alphafold.sh` in the current directory to run
+AlphaFold.
 
-An example of an implementation of this script using [Slurm](https://slurm.schedmd.com) is provided in
-the [alphafold.sh](alphafold.sh) file.
+An example of an implementation of this script using [Slurm](https://slurm.schedmd.com) is provided
+in the [alphafold.sh](alphafold.sh) file.
 
 ### Patching AlphaFold-Multimer
 
@@ -106,7 +107,8 @@ The default Nextflow pipline expects to run AlphaFold in two steps.
     * Run AlphaFold-mutlimer's AI program based on "prepare's" output
     * Uses 1 CPU and 1 GPU
 
-To make it possible to run the "prepare" step separately, you must patch AlphaFold using the patch file available here:
+To make it possible to run the "prepare" step separately, you must patch AlphaFold using the patch
+file available here:
 [Patches for AlphaFold](https://github.com/benoitcoulombelab/modules/tree/main/alphafold)
 
 #### Running only prepare or alphafold step
@@ -129,8 +131,8 @@ This will allow you to optimize both steps independently to optimize HPC usage.
 
 ### Alternative to patching AlphaFold-Multimer
 
-If you don't care about optimizing CPU/GPU usage, you can run the alternative pipeline that will run AlphaFold
-normally (without patching).
+If you don't care about optimizing CPU/GPU usage, you can run the alternative pipeline that will run
+AlphaFold normally (without patching).
 
 ```shell
 nextflow run pairs-noprepare.nf \
@@ -140,7 +142,8 @@ nextflow run pairs-noprepare.nf \
 
 ## Protein complexes
 
-To find all binary protein-protein interactions of a complex, start by running the normal PAIRS pipeline.
+To find all binary protein-protein interactions of a complex, start by running the normal PAIRS
+pipeline.
 [Running PAIRS](#running-pairs)
 
 Once AlphaFold-Multimer completes for all FASTA files, use `multi-interaction-score` script.
@@ -177,9 +180,10 @@ You can extract the interface(s) of a protein-protein interaction using `interac
 interaction-score -r 6 -R residue-pairs.txt -A atom-pairs.txt ranked_0.pdb
 ```
 
-* The `residue-pairs.txt` file contains the residue-pairs that have an atom at a distance below the radius (`-s`
+* The `residue-pairs.txt` file contains the residue-pairs that have an atom at a distance below the
+  radius (`-s` parameter).
+* The `atom-pairs.txt` file contains the atoms-pairs that are at a distance below the radius (`-s`
   parameter).
-* The `atom-pairs.txt` file contains the atoms-pairs that are at a distance below the radius (`-s` parameter).
 
 ### Consensus interface
 
@@ -191,8 +195,8 @@ consensus-interface -r residue-pairs/*.txt -o consensus-residue-pairs.txt \
     -b aligned_baits.txt -t aligned_targets.txt -f clustal
 ```
 
-Since baits and targets may slightly differ in their sequence, you can provide an alignment file to adjust the index of
-the residues in different baits/targets.
+Since baits and targets may slightly differ in their sequence, you can provide an alignment file to
+adjust the index of the residues in different baits/targets.
 
 ## Utilities
 
