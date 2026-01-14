@@ -61,7 +61,7 @@ fasta-pairs --baits baits.fasta --targets targets.fasta --output json -u -i
 
 ```shell
 sbatch nextflow-data.sh \
-    --fasta 'json/*.json' \
+    --json 'json/*.json' \
     --database $database \
     --account $account \
     -process.errorStrategy ignore
