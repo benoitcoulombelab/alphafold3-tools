@@ -11,7 +11,7 @@ then
   script_path=$(dirname "$(scontrol show job "$SLURM_JOB_ID" | awk -F '=' '$0 ~ /Command=/ {print $2; exit}')")
 fi
 
-EXPORT SCRIPT_PATH="$script_path"
+export SCRIPT_PATH="$script_path"
 
 echo "Launching nextflow pipeline ${script_path}/alphafold3_data.nf"
 nextflow run ${script_path}/alphafold3_data.nf -c "${script_path}/alphafold3.config" \
