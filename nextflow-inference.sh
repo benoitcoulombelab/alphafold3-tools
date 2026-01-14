@@ -24,6 +24,6 @@ then
 fi
 export NXF_OPTS="-Xms500M -Xmx8000M"
 
-echo "Launching nextflow pipeline ${script_path}/alphafold3_inference.nf"
-nextflow run ${script_path}/alphafold3_inference.nf -c "${script_path}/alphafold3.config" \
+echo "Launching nextflow pipeline ${script_path}/alphafold3-inference.nf"
+nextflow run ${script_path}/alphafold3-inference.nf -c "${script_path}/alphafold3.config" \
     "$@"

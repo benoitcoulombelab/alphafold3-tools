@@ -35,6 +35,6 @@ process data_pipeline {
   """
   mkdir -p data
   cp \$SCRIPT_PATH/run_alphafold.py .
-  bash \$SCRIPT_PATH/alphafold3_data.sh ${json} data ${params.database} ${params.max_template_date}
+  bash \$SCRIPT_PATH/alphafold3-data.sh ${json} data ${params.database} ${params.max_template_date}
   """
 }

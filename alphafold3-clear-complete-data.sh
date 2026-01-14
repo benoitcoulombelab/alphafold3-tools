@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=24
 #SBATCH --mem=24G
 #SBATCH --mail-type=NONE
-#SBATCH --output=alphafold3_clear_complete_data-%A.out
+#SBATCH --output=alphafold3-clear-complete-data-%A.out
 
 # Exit when any command fails
 set -e
@@ -16,7 +16,7 @@ threads=${SLURM_CPUS_PER_TASK:-1}
 # Usage function
 usage() {
   echo
-  echo "Usage: alphafold3_clear_complete_data.sh [-j json] [-d data]"
+  echo "Usage: alphafold3-clear-complete-data.sh [-j json] [-d data]"
   echo "  -j: Folder containing JSON input files for alphafold3_data  (default: json)"
   echo "  -d: Folder containing JSON output files from alphafold3_data  (default: data)"
   echo "  -t: Number of threads (default: 1 or SLURM_CPUS_PER_TASK if present)"

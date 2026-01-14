@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
 #SBATCH --mail-type=NONE
-#SBATCH --output=alphafold3_data-%A.out
+#SBATCH --output=alphafold3-data-%A.out
 
 # Exit when any command fails
 set -e

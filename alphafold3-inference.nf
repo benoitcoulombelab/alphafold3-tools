@@ -33,6 +33,6 @@ process model_inference {
   """
   mkdir -p structures
   cp \$SCRIPT_PATH/run_alphafold.py .
-  bash \$SCRIPT_PATH/alphafold3_inference.sh ${json} structures ${params.database} ${params.models}
+  bash \$SCRIPT_PATH/alphafold3-inference.sh ${json} structures ${params.database} ${params.models}
   """
 }

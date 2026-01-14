@@ -5,7 +5,7 @@
 #SBATCH --mem=32G
 #SBATCH --gpus=a100:1
 #SBATCH --mail-type=NONE
-#SBATCH --output=alphafold3_inference-%A.out
+#SBATCH --output=alphafold3-inference-%A.out
 
 # Exit when any command fails
 set -e
