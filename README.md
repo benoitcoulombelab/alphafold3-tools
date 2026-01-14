@@ -63,8 +63,7 @@ fasta-pairs --baits baits.fasta --targets targets.fasta --output json -u -i
 sbatch nextflow-data.sh \
     --json 'json/*.json' \
     --database $database \
-    --account $account \
-    -process.errorStrategy ignore
+    --account $account
 ```
 
 When running multiple proteins pairs, chances are high that some jobs will fail.
@@ -82,8 +81,7 @@ Then relaunch the data step using the same command, see [Data step](#Data-step)
 sbatch nextflow-inference.sh \
     --json 'data/*.json' \
     --database $database \
-    --account $account \
-    -process.errorStrategy ignore
+    --account $account
 ```
 
 ## Scoring protein-protein interactions
