@@ -11,3 +11,5 @@ fi
 python3 -m venv ./pairs-env
 source ./pairs-env/bin/activate
 pip install .
+rm -r build
+rm -r pairs.egg-info
