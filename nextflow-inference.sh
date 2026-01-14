@@ -5,6 +5,9 @@
 #SBATCH --mem=8G
 #SBATCH --output=nextflow-inference-%A.out
 
+# Exit when any command fails
+set -e
+
 script_path=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 if ! [[ -f "${script_path}/nextflow-inference.sh" ]] && [[ -n "$SLURM_JOB_ID" ]]
 then

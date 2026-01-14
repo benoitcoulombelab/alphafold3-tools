@@ -5,6 +5,9 @@
 #SBATCH --mem=8G
 #SBATCH --output=nextflow-data-%A.out
 
+# Exit when any command fails
+set -e
+
 script_path=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 if ! [[ -f "${script_path}/nextflow-data.sh" ]] && [[ -n "$SLURM_JOB_ID" ]]
 then

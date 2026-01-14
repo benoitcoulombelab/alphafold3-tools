@@ -6,6 +6,9 @@
 #SBATCH --mail-type=NONE
 #SBATCH --output=nextflow-%A.out
 
+# Exit when any command fails
+set -e
+
 # load required modules
 if [[ -n "$CC_CLUSTER" ]]
 then
