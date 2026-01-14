@@ -8,8 +8,9 @@
    2. [Clone repository](#Clone-repository)
 3. [Updating scripts](#Updating-scripts)
 4. [After installing or updating the scripts](#After-installing-or-updating-the-scripts)
-   1. [Download scripts from AlphaFold 3](#Download-scripts-from-AlphaFold-3)
-   2. [Creating python virtual environment for pairs](#Creating-python-virtual-environment-for-pairs)
+   1. [`Update AlphaFold 3 requirements`](#Update-AlphaFold-3-requirements)
+   2. [Download scripts from AlphaFold 3](#Download-scripts-from-AlphaFold-3)
+   3. [Creating python virtual environment for pairs](#Creating-python-virtual-environment-for-pairs)
 
 ## Prepare working environment
 
@@ -50,6 +51,12 @@ Move to AlphaFold 3 tools scripts directory. See [Prepare working environment](#
 
 ```shell
 cd $tools
+```
+
+### Update AlphaFold 3 requirements
+
+```shell
+bash alphafold3-requirements.sh
 ```
 
 ### Download scripts from AlphaFold 3
