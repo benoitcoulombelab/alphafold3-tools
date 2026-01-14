@@ -8,8 +8,9 @@ To install the tools on Alliance Canada servers, see [INSTALL.md](INSTALL.md)
 
 1. [Prepare working environment](#Prepare-working-environment)
    1. [Set additional variables](#Set-additional-variables)
+   2. [Download AlphaFold 3 database](#Download-AlphaFold-3-database)
 2. [Running AlphaFold 3](#Running-AlphaFold-3)
-   1. [Prepare JSON files](#prepare-fasta-files)
+   1. [Prepare JSON files](#Prepare-JSON-files)
    2. [Data step](#Data-step)
    3. [Inference step](#Inference-step)
 3. [Scoring protein-protein interactions](#Scoring-protein-protein-interactions)
@@ -36,6 +37,15 @@ database=$SCRATCH/alphafold/dbs
 
 ```shell
 account=def-coulomb
+```
+
+### Download AlphaFold 3 database
+
+You can skip this step if you downloaded the database less than 2 months ago.
+
+```shell
+mkdir -p $SCRATCH/alphafold/dbs
+bash fetch_databases.sh $SCRATCH/alphafold/dbs
 ```
 
 ## Running AlphaFold 3
