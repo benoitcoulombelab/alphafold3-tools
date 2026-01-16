@@ -26,7 +26,6 @@ setup(
         "af3-score = pairs.Af3Score:main",
         "delete-fasta = pairs.DeleteFasta:main",
         "fasta-id = pairs.FastaId:main",
-        "fasta-pairs = pairs.FastaPairs:main",
         "id-convert = pairs.IdConvert:main",
         "json-pairs = pairs.JsonPairs:main",
         "list-files = pairs.ListFiles:main",
