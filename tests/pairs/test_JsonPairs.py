@@ -27,13 +27,13 @@ def test_main(testdir, mock_testclass):
   open(targets, 'w').close()
   JsonPairs.json_pairs = MagicMock()
   JsonPairs.main(["-b", baits, "-t", targets])
-  JsonPairs.json_pairs.assert_called_once_with(baits=ANY, targets=ANY,
+  JsonPairs.json_pairs.assert_called_once_with(baits_file=ANY, targets_file=ANY,
                                                seeds=None,
                                                unique=False,
                                                skip_identity=False,
                                                output="")
-  assert JsonPairs.json_pairs.call_args.kwargs["baits"].name == baits
-  assert JsonPairs.json_pairs.call_args.kwargs["targets"].name == targets
+  assert JsonPairs.json_pairs.call_args.kwargs["baits_file"] == baits
+  assert JsonPairs.json_pairs.call_args.kwargs["targets_file"] == targets
 
 
 def test_main_parameters(testdir, mock_testclass):
@@ -49,13 +49,13 @@ def test_main_parameters(testdir, mock_testclass):
   JsonPairs.main(
       ["-b", baits, "-t", targets, "-s", str(seed1), str(seed2), "-u", "-i",
        "-o", output])
-  JsonPairs.json_pairs.assert_called_once_with(baits=ANY, targets=ANY,
+  JsonPairs.json_pairs.assert_called_once_with(baits_file=ANY, targets_file=ANY,
                                                seeds=[seed1, seed2],
                                                unique=True,
                                                skip_identity=True,
                                                output=output)
-  assert JsonPairs.json_pairs.call_args.kwargs["baits"].name == baits
-  assert JsonPairs.json_pairs.call_args.kwargs["targets"].name == targets
+  assert JsonPairs.json_pairs.call_args.kwargs["baits_file"] == baits
+  assert JsonPairs.json_pairs.call_args.kwargs["targets_file"] == targets
 
 
 def test_main_long_parameters(testdir, mock_testclass):
@@ -72,13 +72,13 @@ def test_main_long_parameters(testdir, mock_testclass):
   JsonPairs.main(
       ["--baits", baits, "--targets", targets, "--seed", str(seed1), str(seed2),
        "--unique", "--identity", "--output", output])
-  JsonPairs.json_pairs.assert_called_once_with(baits=ANY, targets=ANY,
+  JsonPairs.json_pairs.assert_called_once_with(baits_file=ANY, targets_file=ANY,
                                                seeds=[seed1, seed2],
                                                unique=True,
                                                skip_identity=True,
                                                output=output)
-  assert JsonPairs.json_pairs.call_args.kwargs["baits"].name == baits
-  assert JsonPairs.json_pairs.call_args.kwargs["targets"].name == targets
+  assert JsonPairs.json_pairs.call_args.kwargs["baits_file"] == baits
+  assert JsonPairs.json_pairs.call_args.kwargs["targets_file"] == targets
 
 
 def test_json_pairs(testdir, mock_testclass):
@@ -102,7 +102,7 @@ def test_json_pairs(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2g_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  JsonPairs.json_pairs(baits=baits, targets=targets)
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets)
   assert os.path.isfile("RPAB1_HUMAN__RPB4_HUMAN.json")
   with open("RPAB1_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -223,7 +223,7 @@ def test_json_pairs_seed(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2g_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  JsonPairs.json_pairs(baits=baits, targets=targets, seeds=[seed])
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, seeds=[seed])
   assert os.path.isfile("RPAB1_HUMAN__RPB4_HUMAN.json")
   with open("RPAB1_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -345,7 +345,7 @@ def test_json_pairs_seeds(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2g_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  JsonPairs.json_pairs(baits=baits, targets=targets, seeds=[seed1, seed2])
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, seeds=[seed1, seed2])
   assert os.path.isfile("RPAB1_HUMAN__RPB4_HUMAN.json")
   with open("RPAB1_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -465,7 +465,7 @@ def test_json_pairs_unique(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2i_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  JsonPairs.json_pairs(baits=baits, targets=targets, unique=True)
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, unique=True)
   assert os.path.isfile("RPAB1_HUMAN__RPB9_HUMAN.json")
   with open("RPAB1_HUMAN__RPB9_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -558,7 +558,7 @@ def test_json_pairs_skip_identity(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2i_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  JsonPairs.json_pairs(baits=baits, targets=targets, skip_identity=True)
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, skip_identity=True)
   assert os.path.isfile("RPAB1_HUMAN__RPB9_HUMAN.json")
   with open("RPAB1_HUMAN__RPB9_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -628,7 +628,7 @@ def test_json_pairs_unique_skip_identity(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2i_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  JsonPairs.json_pairs(baits=baits, targets=targets, unique=True,
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, unique=True,
                        skip_identity=True)
   assert os.path.isfile("RPAB1_HUMAN__RPB9_HUMAN.json")
   with open("RPAB1_HUMAN__RPB9_HUMAN.json", 'r') as json_file:
@@ -682,7 +682,7 @@ def test_json_pairs_output(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
   output = "output_dir"
   os.mkdir(output)
-  JsonPairs.json_pairs(baits=baits, targets=targets, output=output)
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, output=output)
   assert os.path.isfile(os.path.join(output, "RPAB1_HUMAN__RPB4_HUMAN.json"))
   with open(os.path.join(output, "RPAB1_HUMAN__RPB4_HUMAN.json"),
             'r') as json_file:

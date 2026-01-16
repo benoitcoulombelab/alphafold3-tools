@@ -10,6 +10,21 @@ from Bio import SeqIO, SeqRecord
 from pairs import FastaId
 
 
+def readable_file(filepath: str):
+  """Checks if a file exists and is readable, or if it's "-" for stdin."""
+  if filepath == "-":
+    return filepath # Special case for stdin/stdout path name
+
+  if not os.path.exists(filepath):
+    # Raise ArgumentTypeError to make argparse show a clean error message
+    raise argparse.ArgumentTypeError(f"File not found: {filepath}")
+
+  if not os.access(filepath, os.R_OK):
+    raise argparse.ArgumentTypeError(f"File not readable: {filepath}")
+
+  # If all checks pass, return the original string (the filepath)
+  return filepath
+
 def dir_path(string: str):
   if not string or os.path.isdir(string):
     return string
@@ -21,11 +36,9 @@ def main(argv: list[str] = None):
   parser = argparse.ArgumentParser(
       description="Create JSON files for AlphaFold 3, each one containing a protein pair, "
                   "one protein from baits and one protein from targets file.")
-  parser.add_argument('-b', '--baits', type=argparse.FileType('r'),
-                      required=True,
+  parser.add_argument('-b', '--baits', type=readable_file, required=True,
                       help="FASTA file containing baits")
-  parser.add_argument('-t', '--targets', type=argparse.FileType('r'),
-                      required=True,
+  parser.add_argument('-t', '--targets', type=readable_file, required=True,
                       help="FASTA file containing targets")
   parser.add_argument('-s', '--seed', type=int, nargs="*", default=None,
                       help="Seed(s) to use for model inference.  (default: use random seed)")
@@ -40,19 +53,19 @@ def main(argv: list[str] = None):
 
   args = parser.parse_args(argv)
 
-  json_pairs(baits=args.baits, targets=args.targets, seeds=args.seed,
+  json_pairs(baits_file=args.baits, targets_file=args.targets, seeds=args.seed,
              unique=args.unique, skip_identity=args.identity,
              output=args.output)
 
 
-def json_pairs(baits: TextIO, targets: TextIO, seeds: [int] = None,
+def json_pairs(baits_file: str, targets_file: str, seeds: list[int] = None,
     unique: bool = False,
     skip_identity: bool = False, output: str = ""):
   """
   Create JSON files, each one containing a protein pair, one protein from baits and one protein from targets file.
 
-  :param baits: baits
-  :param targets: targets
+  :param baits_file: baits
+  :param targets_file: targets
   :param seeds: seeds to use for model inference
   :param unique: save only one JSON file per unique pair -
                  do not save POLR2B-POLR2A pair if POLR2A-POLR2B is also present
@@ -60,8 +73,10 @@ def json_pairs(baits: TextIO, targets: TextIO, seeds: [int] = None,
                         if the same protein is present in both baits and targets
   :param output: where to write JSON files
   """
-  baits = parse_fasta(baits)
-  targets = parse_fasta(targets)
+  with open(baits_file, "r") as baits_file_in:
+    baits = parse_fasta(baits_file_in)
+  with open(targets_file, "r") as targets_file_in:
+    targets = parse_fasta(targets_file_in)
 
   processed_ids = set()
   for bait in baits:
