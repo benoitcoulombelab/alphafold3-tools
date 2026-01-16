@@ -18,26 +18,17 @@ setup(
       "numpy>=2.3.3",
       "pandas>=2.3.3",
       "scipy>=1.16.2",
-      "smokesignal>=0.7",
       "tqdm>=4.67.1"
     ],
     entry_points={
       "console_scripts": [
-        "af2complex-score = pairs.Af2complexScore:main",
         "af3-score = pairs.Af3Score:main",
-        "consensus-interface = pairs.ConsensusInterface:main",
         "delete-fasta = pairs.DeleteFasta:main",
         "fasta-id = pairs.FastaId:main",
-        "fasta-pairs = pairs.FastaPairs:main",
         "id-convert = pairs.IdConvert:main",
-        "interaction-score = pairs.InteractionScore:main",
         "json-pairs = pairs.JsonPairs:main",
         "list-files = pairs.ListFiles:main",
-        "multi-interaction-score = pairs.MultiInteractionScore:main",
         "pair-sizes = pairs.PairSizes:main",
-        "pdb-fasta = pairs.PdbFasta:main",
-        "random-sequences = pairs.RandomSequences:main",
-        "score-matrix = pairs.ScoreMatrix:main",
         "split-fasta = pairs.SplitFasta:main",
       ]
     }
