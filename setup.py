@@ -18,7 +18,6 @@ setup(
       "numpy>=2.3.3",
       "pandas>=2.3.3",
       "scipy>=1.16.2",
-      "smokesignal>=0.7",
       "tqdm>=4.67.1"
     ],
     entry_points={
