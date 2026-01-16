@@ -30,7 +30,6 @@ setup(
         "json-pairs = pairs.JsonPairs:main",
         "list-files = pairs.ListFiles:main",
         "pair-sizes = pairs.PairSizes:main",
-        "score-matrix = pairs.ScoreMatrix:main",
         "split-fasta = pairs.SplitFasta:main",
       ]
     }
