@@ -64,8 +64,8 @@ def json_pairs(baits_file: str, targets_file: str, seeds: list[int] = None,
   """
   Create JSON files, each one containing a protein pair, one protein from baits and one protein from targets file.
 
-  :param baits_file: baits
-  :param targets_file: targets
+  :param baits_file: FASTA file containing baits
+  :param targets_file: FASTA file containing targets
   :param seeds: seeds to use for model inference
   :param unique: save only one JSON file per unique pair -
                  do not save POLR2B-POLR2A pair if POLR2A-POLR2B is also present
@@ -99,7 +99,6 @@ def json_pairs(baits_file: str, targets_file: str, seeds: list[int] = None,
                                                                      2147483647)],
                    "dialect": "alphafold3", "version": 1,
                    "sequences": [bait_data, target_data]}
-      json_data["sequences"][0] = bait_data
       with open(os.path.join(output, f"{merge_id}.json"), 'w') as output_file:
         output_file.write(json.dumps(json_data, indent=4))
       processed_ids.add(merge_id)
