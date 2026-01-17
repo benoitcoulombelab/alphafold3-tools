@@ -231,11 +231,11 @@ def test_json_pairs_sequence(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
   sequence = str(Path(__file__).parent.joinpath("atp.json"))
   JsonPairs.json_pairs(baits_file=baits, targets_file=targets, sequence_file=sequence)
-  assert os.path.isfile("RPAB1_HUMAN__RPB4_HUMAN.json")
-  with open("RPAB1_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
+  assert os.path.isfile("RPAB1_HUMAN__RPB4_HUMAN__AP.json")
+  with open("RPAB1_HUMAN__RPB4_HUMAN__AP.json", 'r') as json_file:
     json_data = json.load(json_file)
     assert "name" in json_data
-    assert json_data["name"] == "RPAB1_HUMAN__RPB4_HUMAN"
+    assert json_data["name"] == "RPAB1_HUMAN__RPB4_HUMAN__AP"
     assert "modelSeeds" in json_data
     assert len(json_data["modelSeeds"]) == 1
     assert re.match(r"^\d+$", str(json_data["modelSeeds"][0]))
@@ -260,11 +260,11 @@ def test_json_pairs_sequence(testdir, mock_testclass):
     assert json_data["sequences"][2]["ligand"]["id"] == "AP"
     assert "ccdCodes" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["ccdCodes"][0] == "ATP"
-  assert os.path.isfile("RPAB1_HUMAN__RPB7_HUMAN.json")
-  with open("RPAB1_HUMAN__RPB7_HUMAN.json", 'r') as json_file:
+  assert os.path.isfile("RPAB1_HUMAN__RPB7_HUMAN__AP.json")
+  with open("RPAB1_HUMAN__RPB7_HUMAN__AP.json", 'r') as json_file:
     json_data = json.load(json_file)
     assert "name" in json_data
-    assert json_data["name"] == "RPAB1_HUMAN__RPB7_HUMAN"
+    assert json_data["name"] == "RPAB1_HUMAN__RPB7_HUMAN__AP"
     assert "modelSeeds" in json_data
     assert len(json_data["modelSeeds"]) == 1
     assert re.match(r"^\d+$", str(json_data["modelSeeds"][0]))
@@ -289,11 +289,11 @@ def test_json_pairs_sequence(testdir, mock_testclass):
     assert json_data["sequences"][2]["ligand"]["id"] == "AP"
     assert "ccdCodes" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["ccdCodes"][0] == "ATP"
-  assert os.path.isfile("RPB9_HUMAN__RPB4_HUMAN.json")
-  with open("RPB9_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
+  assert os.path.isfile("RPB9_HUMAN__RPB4_HUMAN__AP.json")
+  with open("RPB9_HUMAN__RPB4_HUMAN__AP.json", 'r') as json_file:
     json_data = json.load(json_file)
     assert "name" in json_data
-    assert json_data["name"] == "RPB9_HUMAN__RPB4_HUMAN"
+    assert json_data["name"] == "RPB9_HUMAN__RPB4_HUMAN__AP"
     assert "modelSeeds" in json_data
     assert len(json_data["modelSeeds"]) == 1
     assert re.match(r"^\d+$", str(json_data["modelSeeds"][0]))
@@ -318,11 +318,11 @@ def test_json_pairs_sequence(testdir, mock_testclass):
     assert json_data["sequences"][2]["ligand"]["id"] == "AP"
     assert "ccdCodes" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["ccdCodes"][0] == "ATP"
-  assert os.path.isfile("RPB9_HUMAN__RPB7_HUMAN.json")
-  with open("RPB9_HUMAN__RPB7_HUMAN.json", 'r') as json_file:
+  assert os.path.isfile("RPB9_HUMAN__RPB7_HUMAN__AP.json")
+  with open("RPB9_HUMAN__RPB7_HUMAN__AP.json", 'r') as json_file:
     json_data = json.load(json_file)
     assert "name" in json_data
-    assert json_data["name"] == "RPB9_HUMAN__RPB7_HUMAN"
+    assert json_data["name"] == "RPB9_HUMAN__RPB7_HUMAN__AP"
     assert "modelSeeds" in json_data
     assert len(json_data["modelSeeds"]) == 1
     assert re.match(r"^\d+$", str(json_data["modelSeeds"][0]))

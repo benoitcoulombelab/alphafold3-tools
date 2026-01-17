@@ -105,9 +105,11 @@ def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
       target_data = {
         "protein": {"id": target_id, "sequence": str(targets[target].seq)}}
       merge_id = f"{bait}__{target}"
+      processed_ids.add(merge_id)
       sequences = [bait_data, target_data]
       if sequence:
         sequences.append(sequence)
+        merge_id = f"{merge_id}__{sequence_id}"
       json_data = {"name": merge_id,
                    "modelSeeds": seeds if seeds else [random.randint(1,
                                                                      2147483647)],
@@ -115,7 +117,6 @@ def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
                    "sequences": sequences}
       with open(os.path.join(output, f"{merge_id}.json"), 'w') as output_file:
         output_file.write(json.dumps(json_data, indent=4))
-      processed_ids.add(merge_id)
 
 
 def parse_fasta(fasta: TextIO) -> dict[str, SeqRecord]:
