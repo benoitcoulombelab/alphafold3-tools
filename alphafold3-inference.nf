@@ -1,7 +1,7 @@
 nextflow.enable.dsl = 2
 
 params.models = "$HOME/alphafold3-models"
-params.output = "$baseDir"
+params.output = "$launchDir"
 
 log.info """\
          AlphaFold 3 model inference

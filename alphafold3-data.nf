@@ -3,7 +3,7 @@ nextflow.enable.dsl = 2
 now = java.time.LocalDate.now()
 date_format = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 params.max_template_date = date_format.format(now)
-params.output = "$baseDir"
+params.output = "$launchDir"
 
 log.info """\
          AlphaFold 3 data pipeline
