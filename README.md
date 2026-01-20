@@ -44,8 +44,8 @@ account=def-coulomb
 You can skip this step if you downloaded the database less than 2 months ago.
 
 ```shell
-mkdir -p $SCRATCH/alphafold/dbs
-bash fetch_databases.sh $SCRATCH/alphafold/dbs
+mkdir -p $database
+bash fetch_databases.sh $database
 ```
 
 ## Running AlphaFold 3
