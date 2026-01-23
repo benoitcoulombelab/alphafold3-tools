@@ -79,7 +79,7 @@ Then relaunch the data step using the same command, see [Data step](#Data-step)
 
 ```shell
 sbatch nextflow-inference.sh \
-    --json 'data/*.json' \
+    --json 'data/**/*.json' \
     --database $database \
     --account $account
 ```
