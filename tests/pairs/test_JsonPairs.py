@@ -129,11 +129,13 @@ def test_json_pairs(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
   assert os.path.isfile("RPAB1_HUMAN__RPB7_HUMAN.json")
   with open("RPAB1_HUMAN__RPB7_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -153,11 +155,13 @@ def test_json_pairs(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"
   assert os.path.isfile("RPB9_HUMAN__RPB4_HUMAN.json")
   with open("RPB9_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -177,11 +181,13 @@ def test_json_pairs(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
   assert os.path.isfile("RPB9_HUMAN__RPB7_HUMAN.json")
   with open("RPB9_HUMAN__RPB7_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -201,11 +207,13 @@ def test_json_pairs(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"
 
 
 def test_json_pairs_sequence(testdir, mock_testclass):
@@ -250,16 +258,19 @@ def test_json_pairs_sequence(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
     assert "ligand" in json_data["sequences"][2]
     assert "id" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["id"] == "AP"
     assert "ccdCodes" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["ccdCodes"][0] == "ATP"
+    assert json_data["sequences"][2]["ligand"]["description"] == "ATP"
   assert os.path.isfile("RPAB1_HUMAN__RPB7_HUMAN__AP.json")
   with open("RPAB1_HUMAN__RPB7_HUMAN__AP.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -279,16 +290,19 @@ def test_json_pairs_sequence(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"
     assert "ligand" in json_data["sequences"][2]
     assert "id" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["id"] == "AP"
     assert "ccdCodes" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["ccdCodes"][0] == "ATP"
+    assert json_data["sequences"][2]["ligand"]["description"] == "ATP"
   assert os.path.isfile("RPB9_HUMAN__RPB4_HUMAN__AP.json")
   with open("RPB9_HUMAN__RPB4_HUMAN__AP.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -308,16 +322,19 @@ def test_json_pairs_sequence(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
     assert "ligand" in json_data["sequences"][2]
     assert "id" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["id"] == "AP"
     assert "ccdCodes" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["ccdCodes"][0] == "ATP"
+    assert json_data["sequences"][2]["ligand"]["description"] == "ATP"
   assert os.path.isfile("RPB9_HUMAN__RPB7_HUMAN__AP.json")
   with open("RPB9_HUMAN__RPB7_HUMAN__AP.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -337,16 +354,19 @@ def test_json_pairs_sequence(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"
     assert "ligand" in json_data["sequences"][2]
     assert "id" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["id"] == "AP"
     assert "ccdCodes" in json_data["sequences"][2]["ligand"]
     assert json_data["sequences"][2]["ligand"]["ccdCodes"][0] == "ATP"
+    assert json_data["sequences"][2]["ligand"]["description"] == "ATP"
 
 
 def test_json_pairs_seed(testdir, mock_testclass):
@@ -391,11 +411,13 @@ def test_json_pairs_seed(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
   assert os.path.isfile("RPAB1_HUMAN__RPB7_HUMAN.json")
   with open("RPAB1_HUMAN__RPB7_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -415,11 +437,13 @@ def test_json_pairs_seed(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"
   assert os.path.isfile("RPB9_HUMAN__RPB4_HUMAN.json")
   with open("RPB9_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -439,11 +463,13 @@ def test_json_pairs_seed(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
   assert os.path.isfile("RPB9_HUMAN__RPB7_HUMAN.json")
   with open("RPB9_HUMAN__RPB7_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -463,11 +489,13 @@ def test_json_pairs_seed(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"
 
 
 def test_json_pairs_seeds(testdir, mock_testclass):
@@ -514,11 +542,13 @@ def test_json_pairs_seeds(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
   assert os.path.isfile("RPAB1_HUMAN__RPB7_HUMAN.json")
   with open("RPAB1_HUMAN__RPB7_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -539,11 +569,13 @@ def test_json_pairs_seeds(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"
   assert os.path.isfile("RPB9_HUMAN__RPB4_HUMAN.json")
   with open("RPB9_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -564,11 +596,13 @@ def test_json_pairs_seeds(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
   assert os.path.isfile("RPB9_HUMAN__RPB7_HUMAN.json")
   with open("RPB9_HUMAN__RPB7_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -589,11 +623,13 @@ def test_json_pairs_seeds(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"
 
 
 def test_json_pairs_unique(testdir, mock_testclass):
@@ -633,11 +669,13 @@ def test_json_pairs_unique(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB9_HUMAN"
   assert os.path.isfile("RPAB1_HUMAN__RPAB1_HUMAN.json")
   with open("RPAB1_HUMAN__RPAB1_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -657,11 +695,13 @@ def test_json_pairs_unique(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPABT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPAB1_HUMAN"
   assert not os.path.isfile("RPB9_HUMAN__RPAB1_HUMAN.json")
   assert os.path.isfile("RPB9_HUMAN__RPB9_HUMAN.json")
   with open("RPB9_HUMAN__RPB9_HUMAN.json", 'r') as json_file:
@@ -682,11 +722,13 @@ def test_json_pairs_unique(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB9_HUMAN"
 
 
 def test_json_pairs_skip_identity(testdir, mock_testclass):
@@ -726,11 +768,13 @@ def test_json_pairs_skip_identity(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB9_HUMAN"
   assert not os.path.isfile("RPAB1_HUMAN__RPAB1_HUMAN.json")
   assert os.path.isfile("RPB9_HUMAN__RPAB1_HUMAN.json")
   with open("RPB9_HUMAN__RPAB1_HUMAN.json", 'r') as json_file:
@@ -751,11 +795,13 @@ def test_json_pairs_skip_identity(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPAB1_HUMAN"
   assert not os.path.isfile("RPB9_HUMAN__RPB9_HUMAN.json")
 
 
@@ -797,11 +843,13 @@ def test_json_pairs_unique_skip_identity(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB9_HUMAN"
   assert not os.path.isfile("RPAB1_HUMAN__RPAB1_HUMAN.json")
   assert not os.path.isfile("RPB9_HUMAN__RPAB1_HUMAN.json")
   assert not os.path.isfile("RPB9_HUMAN__RPB9_HUMAN.json")
@@ -851,11 +899,13 @@ def test_json_pairs_output(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
   assert os.path.isfile(os.path.join(output, "RPAB1_HUMAN__RPB7_HUMAN.json"))
   with open(os.path.join(output, "RPAB1_HUMAN__RPB7_HUMAN.json"),
             'r') as json_file:
@@ -876,11 +926,13 @@ def test_json_pairs_output(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPAB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2e.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPAB1_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"
   assert os.path.isfile(os.path.join(output, "RPB9_HUMAN__RPB4_HUMAN.json"))
   with open(os.path.join(output, "RPB9_HUMAN__RPB4_HUMAN.json"),
             'r') as json_file:
@@ -901,11 +953,13 @@ def test_json_pairs_output(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2d.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB4_HUMAN"
   assert os.path.isfile(os.path.join(output, "RPB9_HUMAN__RPB7_HUMAN.json"))
   with open(os.path.join(output, "RPB9_HUMAN__RPB7_HUMAN.json"),
             'r') as json_file:
@@ -926,8 +980,10 @@ def test_json_pairs_output(testdir, mock_testclass):
     assert json_data["sequences"][0]["protein"]["id"] == "RPB"
     assert "sequence" in json_data["sequences"][0]["protein"]
     assert json_data["sequences"][0]["protein"]["sequence"] == polr2i.seq
+    assert json_data["sequences"][0]["protein"]["description"] == "RPB9_HUMAN"
     assert "protein" in json_data["sequences"][1]
     assert "id" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["id"] == "RPBT"
     assert "sequence" in json_data["sequences"][1]["protein"]
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
+    assert json_data["sequences"][1]["protein"]["description"] == "RPB7_HUMAN"

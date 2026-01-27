@@ -1,6 +1,7 @@
 {
   "ligand": {
     "id": "AP",
-    "ccdCodes": ["ATP"]
+    "ccdCodes": ["ATP"],
+    "description": "ATP"
   }
 }
