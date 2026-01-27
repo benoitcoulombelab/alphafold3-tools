@@ -54,7 +54,7 @@ bash fetch_databases.sh $database
 
 ```shell
 mkdir json
-fasta-pairs --baits baits.fasta --targets targets.fasta --output json -u -i
+json-pairs --baits baits.fasta --targets targets.fasta --output json -u -i
 ```
 
 ### Data step
