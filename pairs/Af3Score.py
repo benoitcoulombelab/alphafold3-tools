@@ -70,7 +70,7 @@ def main(argv: list[str] = None):
                       help="Metrics to output  (default: %(default)s)")
   parser.add_argument('-n', '--name',
                       default=r"([\w-]+)__([\w-]+)_summary_confidences",
-                      help="Regular expression to obtain protein/gene names based on confidence filename "
+                      help="Regular expression to obtain bait/target names based on confidence filename "
                            " (default: %(default)s)")
   parser.add_argument('-p', '--progress', action="store_true", default=False,
                       help="Show progress bar")
