@@ -151,9 +151,6 @@ def get_confidence_scores(confidence_file: str, metrics: list[str] = None) -> li
   """
   Returns confidence scores for given metrics
 
-  Nathalie
-  450-622-5110 poste 4414
-
   :param confidence_file: confidence JSON file
   :param metrics: metrics to obtain confidence scores
   :return: confidence scores

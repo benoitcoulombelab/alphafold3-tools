@@ -213,7 +213,7 @@ def test_get_confidence_scores_iptm(testdir, mock_testclass):
       "fab53__hvm62_mouse_summary_confidences.json"),
       confidence_file)
   scores = Af3Score.get_confidence_scores(confidence_file, ["iptm"])
-  assert [0.76] == scores
+  assert scores == [0.76]
 
 
 def test_get_confidence_scores_ptm(testdir, mock_testclass):
@@ -223,7 +223,7 @@ def test_get_confidence_scores_ptm(testdir, mock_testclass):
       "fab53__hvm62_mouse_summary_confidences.json"),
       confidence_file)
   scores = Af3Score.get_confidence_scores(confidence_file, ["ptm"])
-  assert [0.8] == scores
+  assert scores == [0.8]
 
 
 def test_get_confidence_scores_ranking_score(testdir, mock_testclass):
@@ -233,7 +233,7 @@ def test_get_confidence_scores_ranking_score(testdir, mock_testclass):
       "fab53__hvm62_mouse_summary_confidences.json"),
       confidence_file)
   scores = Af3Score.get_confidence_scores(confidence_file, ["ranking_score"])
-  assert [0.81] == scores
+  assert scores == [0.81]
 
 
 def test_get_confidence_scores_iptm_ptm_ranking_score(testdir, mock_testclass):
@@ -243,7 +243,7 @@ def test_get_confidence_scores_iptm_ptm_ranking_score(testdir, mock_testclass):
       "fab53__hvm62_mouse_summary_confidences.json"),
       confidence_file)
   scores = Af3Score.get_confidence_scores(confidence_file, ["iptm", "ptm", "ranking_score"])
-  assert [0.76, 0.8, 0.81] == scores
+  assert scores == [0.76, 0.8, 0.81]
 
 
 def test_get_confidence_scores_ranking_score_ptm_iptm(testdir, mock_testclass):
@@ -253,7 +253,7 @@ def test_get_confidence_scores_ranking_score_ptm_iptm(testdir, mock_testclass):
       "fab53__hvm62_mouse_summary_confidences.json"),
       confidence_file)
   scores = Af3Score.get_confidence_scores(confidence_file, ["ranking_score", "ptm", "iptm"])
-  assert [0.81, 0.8, 0.76] == scores
+  assert scores == [0.81, 0.8, 0.76]
 
 
 def test_get_confidence_scores_empty_metrics(testdir, mock_testclass):
@@ -263,7 +263,7 @@ def test_get_confidence_scores_empty_metrics(testdir, mock_testclass):
       "fab53__hvm62_mouse_summary_confidences.json"),
       confidence_file)
   scores = Af3Score.get_confidence_scores(confidence_file, [])
-  assert [] == scores
+  assert scores == []
 
 
 def test_get_confidence_scores_invalid_metrics(testdir, mock_testclass):
