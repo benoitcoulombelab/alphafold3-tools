@@ -1,22 +1,24 @@
 import shutil
 import io
 from pathlib import Path
-from unittest.mock import MagicMock, ANY, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pairs import Af3Score
+from pairs import Af3Score, Af3LocalInteractionScore
 
 
 @pytest.fixture
 def mock_testclass():
   _af3_score = Af3Score.af3_score
-  _parse_confidence = Af3Score.parse_confidence
+  _get_confidence_scores = Af3Score.get_confidence_scores
   _parse_mapping = Af3Score.parse_mapping
+  _local_interaction_score = Af3LocalInteractionScore.local_interaction_score
   yield
   Af3Score.af3_score = _af3_score
-  Af3Score.parse_confidence = _parse_confidence
+  Af3Score.get_confidence_scores = _get_confidence_scores
   Af3Score.parse_mapping = _parse_mapping
+  Af3LocalInteractionScore.local_interaction_score = _local_interaction_score
 
 
 def test_main(testdir, mock_testclass):
@@ -88,15 +90,12 @@ def test_af3_score(testdir, mock_testclass):
   shutil.copy(Path(__file__).parent.joinpath(
       "fab53__znrf1_mouse_summary_confidences.json"),
       confidence_file_2)
-  confidence_1 = Af3Score.Confidence(0.7772, 0.7059, 0.8952)
-  confidence_2 = Af3Score.Confidence(0.7601, 0.783, 0.8985)
   output = "output.txt"
-  Af3Score.parse_confidence = MagicMock(
-      side_effect=[confidence_1, confidence_2])
+  Af3Score.get_confidence_scores = MagicMock(side_effect=[[0.7772], [0.7601]])
   Af3Score.parse_mapping = MagicMock()
   Af3Score.af3_score(output_file=output)
-  Af3Score.parse_confidence.assert_any_call(confidence_file_1)
-  Af3Score.parse_confidence.assert_any_call(confidence_file_2)
+  Af3Score.get_confidence_scores.assert_any_call(confidence_file_1, ["iptm"])
+  Af3Score.get_confidence_scores.assert_any_call(confidence_file_2, ["iptm"])
   Af3Score.parse_mapping.assert_not_called()
   with open(output, "r") as output_in:
     assert output_in.readline() == "Bait\tTarget\tipTM\n"
@@ -116,22 +115,20 @@ def test_af3_score_parameters(testdir, mock_testclass):
   shutil.copy(Path(__file__).parent.joinpath(
       "fab53__znrf1_mouse_summary_confidences.json"),
       confidence_file_2)
-  confidence_1 = Af3Score.Confidence(0.7772, 0.7059, 0.8952)
-  confidence_2 = Af3Score.Confidence(0.7601, 0.783, 0.8985)
   output = "output.txt"
   metrics = ["iptm", "ptm", "ranking_score"]
   mappings_file = "mappings.txt"
   Path(mappings_file).touch()
   mappings = {"RPB-1": "POLR2A", "RPB-2": "POLR2B", "RPB-3": "POLR2C"}
-  Af3Score.parse_confidence = MagicMock(
-      side_effect=[confidence_1, confidence_2])
+  Af3Score.get_confidence_scores = MagicMock(side_effect=[[0.7772, 0.7059, 0.8952],
+                                                          [0.7601, 0.783, 0.8985]])
   Af3Score.parse_mapping = MagicMock(return_value=mappings)
   Af3Score.af3_score("confidences", output,
                      r"([\w-]+)___([\w-]+)_summary_confidences",
                      metrics, False, mappings_file,
                      2, 3)
-  Af3Score.parse_confidence.assert_any_call(confidence_file_1)
-  Af3Score.parse_confidence.assert_any_call(confidence_file_2)
+  Af3Score.get_confidence_scores.assert_any_call(confidence_file_1, metrics)
+  Af3Score.get_confidence_scores.assert_any_call(confidence_file_2, metrics)
   Af3Score.parse_mapping.assert_called_once_with(mappings_file, 2, 3)
   with open(output, "r") as output_in:
     assert output_in.readline() == "Bait\tTarget\tipTM\tpTM\tRanking score\n"
@@ -151,18 +148,15 @@ def test_af3_score_progress(testdir, mock_testclass):
       "fab53__znrf1_mouse_summary_confidences.json"),
       confidence_file_2)
   confidence_files = [confidence_file_1, confidence_file_2]
-  confidence_1 = Af3Score.Confidence(0.7772, 0.7059, 0.8952)
-  confidence_2 = Af3Score.Confidence(0.7601, 0.783, 0.8985)
   output = "output.txt"
-  Af3Score.parse_confidence = MagicMock(
-      side_effect=[confidence_1, confidence_2])
+  Af3Score.get_confidence_scores = MagicMock(side_effect=[[0.7772], [0.7601]])
   Af3Score.parse_mapping = MagicMock()
   with patch("tqdm.tqdm", return_value=confidence_files) as mock_tqdm:
     Af3Score.af3_score(output_file=output,
                        progress=True)
     mock_tqdm.assert_called_once_with(confidence_files)
-  Af3Score.parse_confidence.assert_any_call(confidence_file_1)
-  Af3Score.parse_confidence.assert_any_call(confidence_file_2)
+  Af3Score.get_confidence_scores.assert_any_call(confidence_file_1, ["iptm"])
+  Af3Score.get_confidence_scores.assert_any_call(confidence_file_2, ["iptm"])
   Af3Score.parse_mapping.assert_not_called()
   with open(output, "r") as output_in:
     assert output_in.readline() == "Bait\tTarget\tipTM\n"
@@ -181,16 +175,13 @@ def test_af3_score_empty_metrics(testdir, mock_testclass):
   shutil.copy(Path(__file__).parent.joinpath(
       "fab53__znrf1_mouse_summary_confidences.json"),
       confidence_file_2)
-  confidence_1 = Af3Score.Confidence(0.7772, 0.7059, 0.8952)
-  confidence_2 = Af3Score.Confidence(0.7601, 0.783, 0.8985)
   output = "output.txt"
-  Af3Score.parse_confidence = MagicMock(
-      side_effect=[confidence_1, confidence_2])
+  Af3Score.get_confidence_scores = MagicMock(side_effect=[[0.7772], [0.7601]])
   Af3Score.parse_mapping = MagicMock()
   with pytest.raises(AssertionError):
     Af3Score.af3_score(output_file=output,
                        metrics=[])
-  Af3Score.parse_confidence.assert_not_called()
+  Af3Score.get_confidence_scores.assert_not_called()
   Af3Score.parse_mapping.assert_not_called()
 
 
@@ -205,26 +196,84 @@ def test_af3_score_invalid_metrics(testdir, mock_testclass):
   shutil.copy(Path(__file__).parent.joinpath(
       "fab53__znrf1_mouse_summary_confidences.json"),
       confidence_file_2)
-  confidence_1 = Af3Score.Confidence(0.7772, 0.7059, 0.8952)
-  confidence_2 = Af3Score.Confidence(0.7601, 0.783, 0.8985)
   output = "output.txt"
-  Af3Score.parse_confidence = MagicMock(
-      side_effect=[confidence_1, confidence_2])
+  Af3Score.get_confidence_scores = MagicMock(side_effect=[[0.7772], [0.7601]])
   Af3Score.parse_mapping = MagicMock()
   with pytest.raises(AssertionError):
     Af3Score.af3_score(output_file=output,
                        metrics=["test"])
-  Af3Score.parse_confidence.assert_not_called()
+  Af3Score.get_confidence_scores.assert_not_called()
   Af3Score.parse_mapping.assert_not_called()
 
 
-def test_parse_confidence(testdir, mock_testclass):
-  confidence_file = Path(__file__).parent.joinpath(
-      "fab53__znrf1_mouse_summary_confidences.json")
-  confidence = Af3Score.parse_confidence(str(confidence_file))
-  assert confidence.iptm == 0.13
-  assert confidence.ptm == 0.45
-  assert confidence.ranking_score == 0.35
+def test_get_confidence_scores_iptm(testdir, mock_testclass):
+  confidence_file = "POLR2A__POLR2B/POLR2A__POLR2B_summary_confidences.json"
+  Path(confidence_file).parent.mkdir()
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file)
+  scores = Af3Score.get_confidence_scores(confidence_file, ["iptm"])
+  assert [0.76] == scores
+
+
+def test_get_confidence_scores_ptm(testdir, mock_testclass):
+  confidence_file = "POLR2A__POLR2B/POLR2A__POLR2B_summary_confidences.json"
+  Path(confidence_file).parent.mkdir()
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file)
+  scores = Af3Score.get_confidence_scores(confidence_file, ["ptm"])
+  assert [0.8] == scores
+
+
+def test_get_confidence_scores_ranking_score(testdir, mock_testclass):
+  confidence_file = "POLR2A__POLR2B/POLR2A__POLR2B_summary_confidences.json"
+  Path(confidence_file).parent.mkdir()
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file)
+  scores = Af3Score.get_confidence_scores(confidence_file, ["ranking_score"])
+  assert [0.81] == scores
+
+
+def test_get_confidence_scores_iptm_ptm_ranking_score(testdir, mock_testclass):
+  confidence_file = "POLR2A__POLR2B/POLR2A__POLR2B_summary_confidences.json"
+  Path(confidence_file).parent.mkdir()
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file)
+  scores = Af3Score.get_confidence_scores(confidence_file, ["iptm", "ptm", "ranking_score"])
+  assert [0.76, 0.8, 0.81] == scores
+
+
+def test_get_confidence_scores_ranking_score_ptm_iptm(testdir, mock_testclass):
+  confidence_file = "POLR2A__POLR2B/POLR2A__POLR2B_summary_confidences.json"
+  Path(confidence_file).parent.mkdir()
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file)
+  scores = Af3Score.get_confidence_scores(confidence_file, ["ranking_score", "ptm", "iptm"])
+  assert [0.81, 0.8, 0.76] == scores
+
+
+def test_get_confidence_scores_empty_metrics(testdir, mock_testclass):
+  confidence_file = "POLR2A__POLR2B/POLR2A__POLR2B_summary_confidences.json"
+  Path(confidence_file).parent.mkdir()
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file)
+  scores = Af3Score.get_confidence_scores(confidence_file, [])
+  assert [] == scores
+
+
+def test_get_confidence_scores_invalid_metrics(testdir, mock_testclass):
+  confidence_file = "POLR2A__POLR2B/POLR2A__POLR2B_summary_confidences.json"
+  Path(confidence_file).parent.mkdir()
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file)
+  with pytest.raises(AssertionError):
+    Af3Score.get_confidence_scores(confidence_file, ["test"])
 
 
 def test_parse_mapping(testdir, mock_testclass):

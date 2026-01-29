@@ -12,14 +12,6 @@ import tqdm
 from pairs import Af3LocalInteractionScore
 
 
-class Confidence:
-  def __init__(self, iptm: float,
-      ptm: float, ranking_score: float):
-    self.iptm = iptm
-    self.ptm = ptm
-    self.ranking_score = ranking_score
-
-
 def readable_file(filepath: str):
   """Checks if a file exists and is readable, or if it's "-" for stdin."""
   if filepath == "-":
@@ -95,7 +87,7 @@ def main(argv: list[str] = None):
 
 def af3_score(input_dir: str = "",
     output_file: str = "-", name: str = r"([\w-]+)__([\w-]+)",
-    metrics: list[str] = [METRICS[0]], progress: bool = False,
+    metrics: list[str] = None, progress: bool = False,
     mapping_file: str = None, source_column: int = 0,
     converted_column: int = 1):
   """
@@ -110,6 +102,8 @@ def af3_score(input_dir: str = "",
   :param source_column: column index of source names in mapping file
   :param converted_column: column index of converted names in mapping file
   """
+  if metrics is None:
+    metrics = [METRICS[0]]
   if len(metrics) == 0:
     raise AssertionError("metrics must have at least one value")
   if len([metric for metric in metrics if metric not in METRICS]) > 0:
@@ -147,59 +141,66 @@ def af3_score(input_dir: str = "",
       bait = mappings[bait] if bait in mappings else bait
       target = mappings[target] if target in mappings else target
       output_file_out.write(f"{bait}\t{target}")
-      confidence = parse_confidence(confidence_file)
-      for metric in metrics:
-        if "iptm" == metric:
-          output_file_out.write(f"\t{confidence.iptm}")
-        elif "ptm" == metric:
-          output_file_out.write(f"\t{confidence.ptm}")
-        elif "ranking_score" == metric:
-          output_file_out.write(f"\t{confidence.ranking_score}")
-        elif "lis" == metric:
-          model_confidence_files = (
-            glob.glob("**/confidences.json",
-                      root_dir=os.path.dirname(confidence_file), recursive=True))
-          model_confidence_files = [
-            os.path.join(os.path.dirname(confidence_file), model_confidence_file)
-            for model_confidence_file in model_confidence_files]
-          structure_files = [
-            model_confidence_file.replace("confidences.json", "model.cif") for
-            model_confidence_file in model_confidence_files]
-          model_lis = [Af3LocalInteractionScore.local_interaction_score(
-              model_confidence_files[i], structure_files[i]) for i in
-            range(0, len(model_confidence_files))]
-          i_lis = statistics.mean([m_lis[0] for m_lis in model_lis])
-          lis = statistics.mean([m_lis[1] for m_lis in model_lis])
-          lia = statistics.mean([m_lis[2] for m_lis in model_lis])
-          output_file_out.write(f"\t{i_lis}\t{lis}\t{lia}")
-        elif "best_lis" == metric:
-          lis_json = confidence_file.replace("_summary_confidences.json",
-                                             "_confidences.json")
-          structure = confidence_file.replace("_summary_confidences.json",
-                                              "_model.cif")
-          i_lis, lis, lia = Af3LocalInteractionScore.local_interaction_score(
-              lis_json, structure)
-          output_file_out.write(f"\t{i_lis}\t{lis}\t{lia}")
+      scores = get_confidence_scores(confidence_file, metrics)
+      for score in scores:
+        output_file_out.write(f"\t{score}")
       output_file_out.write("\n")
 
 
-def parse_confidence(confidence_file: str) -> Confidence:
+def get_confidence_scores(confidence_file: str, metrics: list[str] = None) -> list[float]:
   """
-  Parses confidence scores.
+  Returns confidence scores for given metrics
 
-  :param confidence_file: summary confidence JSON file
-  :return: confidence
+  Nathalie
+  450-622-5110 poste 4414
+
+  :param confidence_file: confidence JSON file
+  :param metrics: metrics to obtain confidence scores
+  :return: confidence scores
   """
+  if metrics is None:
+    metrics = [METRICS[0]]
+  if len([metric for metric in metrics if metric not in METRICS]) > 0:
+    raise AssertionError(
+        f"metrics values must all be present in {METRICS}")
+
   with open(confidence_file, 'r') as input_in:
     confidences = json.load(input_in)
-  if METRICS[0] not in confidences:
-    raise AssertionError(
-        f"metric {METRICS[0]} not found in confidence JSON file {confidence_file}")
-  iptm = confidences["iptm"]
-  ptm = confidences["ptm"]
-  ranking_score = confidences["ranking_score"]
-  return Confidence(iptm, ptm,
-                    ranking_score)
+
+  scores = []
+  for metric in metrics:
+    if "iptm" == metric:
+      scores.append(confidences["iptm"])
+    elif "ptm" == metric:
+      scores.append(confidences["ptm"])
+    elif "ranking_score" == metric:
+      scores.append(confidences["ranking_score"])
+    elif "lis" == metric:
+      model_confidence_files = (
+        glob.glob("**/confidences.json",
+                  root_dir=os.path.dirname(confidence_file), recursive=True))
+      model_confidence_files = [
+        os.path.join(os.path.dirname(confidence_file), model_confidence_file)
+        for model_confidence_file in model_confidence_files]
+      structure_files = [
+        model_confidence_file.replace("confidences.json", "model.cif") for
+        model_confidence_file in model_confidence_files]
+      model_lis = [Af3LocalInteractionScore.local_interaction_score(
+          model_confidence_files[i], structure_files[i]) for i in
+        range(0, len(model_confidence_files))]
+      i_lis = statistics.mean([m_lis[0] for m_lis in model_lis])
+      lis = statistics.mean([m_lis[1] for m_lis in model_lis])
+      lia = statistics.mean([m_lis[2] for m_lis in model_lis])
+      scores.append([i_lis, lis, lia])
+    elif "best_lis" == metric:
+      lis_json = confidence_file.replace("_summary_confidences.json",
+                                         "_confidences.json")
+      structure = confidence_file.replace("_summary_confidences.json",
+                                          "_model.cif")
+      i_lis, lis, lia = Af3LocalInteractionScore.local_interaction_score(
+          lis_json, structure)
+      scores.append([i_lis, lis, lia])
+  return scores
 
 
 def parse_mapping(mapping_file: str, source_column: int = 0,
