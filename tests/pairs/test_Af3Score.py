@@ -1,5 +1,7 @@
 import shutil
 import io
+import os
+import statistics
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -19,6 +21,22 @@ def mock_testclass():
   Af3Score.get_confidence_scores = _get_confidence_scores
   Af3Score.parse_mapping = _parse_mapping
   Af3LocalInteractionScore.local_interaction_score = _local_interaction_score
+
+
+def create_alphafold3_files(alphafold_output, name):
+  create_files = [f"{name}_confidences.json", f"{name}_data.json",
+                  f"{name}_model.cif",
+                  f"{name}_summary_confidences.json", "ranking_scores.csv",
+                  "TERMS_OF_USE.md"]
+  [open(os.path.join(alphafold_output, file), 'w') for file in create_files]
+  sample_folders = ["seed-1_sample-0", "seed-1_sample-1", "seed-1_sample-2",
+                    "seed-1_sample-3", "seed-1_sample-4"]
+  create_sample_files = ["confidences.json", "model.cif",
+                         "summary_confidences.json"]
+  for sample_folder in sample_folders:
+    os.mkdir(os.path.join(alphafold_output, sample_folder))
+    [open(os.path.join(alphafold_output, sample_folder, file), 'w') for file in
+     create_sample_files]
 
 
 def test_main(testdir, mock_testclass):
@@ -234,6 +252,47 @@ def test_get_confidence_scores_ranking_score(testdir, mock_testclass):
       confidence_file)
   scores = Af3Score.get_confidence_scores(confidence_file, ["ranking_score"])
   assert scores == [0.81]
+
+
+def test_get_confidence_scores_lis(testdir, mock_testclass):
+  confidence_file = "POLR2A__POLR2B/POLR2A__POLR2B_summary_confidences.json"
+  Path(confidence_file).parent.mkdir()
+  create_alphafold3_files("POLR2A__POLR2B", "POLR2A__POLR2B")
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file)
+  lis_scores = [
+    [0.322131832, 0.210386822, 16614], [0.15153642, 0.088703528, 6339], [0.301954094, 0.175839958, 27422],
+    [0.247117775, 0.176551479, 5151], [0.178270958, 0.110770328, 5608]]
+  Af3LocalInteractionScore.local_interaction_score = MagicMock(side_effect=lis_scores)
+  scores = Af3Score.get_confidence_scores(confidence_file, ["lis"])
+  Af3LocalInteractionScore.local_interaction_score.assert_any_call(
+      "POLR2A__POLR2B/seed-1_sample-0/confidences.json", "POLR2A__POLR2B/seed-1_sample-0/model.cif")
+  Af3LocalInteractionScore.local_interaction_score.assert_any_call(
+      "POLR2A__POLR2B/seed-1_sample-1/confidences.json", "POLR2A__POLR2B/seed-1_sample-1/model.cif")
+  Af3LocalInteractionScore.local_interaction_score.assert_any_call(
+      "POLR2A__POLR2B/seed-1_sample-2/confidences.json", "POLR2A__POLR2B/seed-1_sample-2/model.cif")
+  Af3LocalInteractionScore.local_interaction_score.assert_any_call(
+      "POLR2A__POLR2B/seed-1_sample-3/confidences.json", "POLR2A__POLR2B/seed-1_sample-3/model.cif")
+  Af3LocalInteractionScore.local_interaction_score.assert_any_call(
+      "POLR2A__POLR2B/seed-1_sample-4/confidences.json", "POLR2A__POLR2B/seed-1_sample-4/model.cif")
+  assert scores[0] == pytest.approx(statistics.mean(s[0] for s in lis_scores))
+  assert scores[1] == pytest.approx(statistics.mean(s[1] for s in lis_scores))
+  assert scores[2] == pytest.approx(statistics.mean(s[2] for s in lis_scores))
+
+
+def test_get_confidence_scores_best_lis(testdir, mock_testclass):
+  confidence_file = "POLR2A__POLR2B/POLR2A__POLR2B_summary_confidences.json"
+  Path(confidence_file).parent.mkdir()
+  create_alphafold3_files("POLR2A__POLR2B", "POLR2A__POLR2B")
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file)
+  Af3LocalInteractionScore.local_interaction_score = MagicMock(return_value=[0.322131832, 0.210386822, 16614])
+  scores = Af3Score.get_confidence_scores(confidence_file, ["best_lis"])
+  Af3LocalInteractionScore.local_interaction_score.assert_called_once_with(
+      "POLR2A__POLR2B/POLR2A__POLR2B_confidences.json", "POLR2A__POLR2B/POLR2A__POLR2B_model.cif")
+  assert scores == [0.322131832, 0.210386822, 16614]
 
 
 def test_get_confidence_scores_iptm_ptm_ranking_score(testdir, mock_testclass):

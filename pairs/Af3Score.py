@@ -5,7 +5,6 @@ import os
 import re
 import statistics
 import sys
-from typing import TextIO
 
 import tqdm
 
@@ -188,7 +187,7 @@ def get_confidence_scores(confidence_file: str, metrics: list[str] = None) -> li
       i_lis = statistics.mean([m_lis[0] for m_lis in model_lis])
       lis = statistics.mean([m_lis[1] for m_lis in model_lis])
       lia = statistics.mean([m_lis[2] for m_lis in model_lis])
-      scores.append([i_lis, lis, lia])
+      scores.extend([i_lis, lis, lia])
     elif "best_lis" == metric:
       lis_json = confidence_file.replace("_summary_confidences.json",
                                          "_confidences.json")
@@ -196,7 +195,7 @@ def get_confidence_scores(confidence_file: str, metrics: list[str] = None) -> li
                                           "_model.cif")
       i_lis, lis, lia = Af3LocalInteractionScore.local_interaction_score(
           lis_json, structure)
-      scores.append([i_lis, lis, lia])
+      scores.extend([i_lis, lis, lia])
   return scores
 
 
