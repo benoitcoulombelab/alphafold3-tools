@@ -180,18 +180,22 @@ def local_interaction_score(af3_json: str, af3_structure: str,
   cum_lengths = np.cumsum(subunit_number)
   starts = np.concatenate(([0], cum_lengths[:-1]))
 
-  # subunit one spans [start_one, end_one), subunit two spans [start_two, end_two)
-  start_one, end_one = starts[subunit_one], cum_lengths[subunit_one]
-  start_two, end_two = starts[subunit_two], cum_lengths[subunit_two]
+  i_lis = []
+  lis = []
+  lia = []
+  for i, j in [[subunit_one, subunit_two], [subunit_two, subunit_one]]:
+    # subunit one spans [start_one, end_one), subunit two spans [start_two, end_two)
+    start_one, end_one = starts[i], cum_lengths[i]
+    start_two, end_two = starts[j], cum_lengths[j]
 
-  # Submatrix for LIS-based local interactions (binary)
-  interaction_submatrix = lia_map[start_one:end_one, start_two:end_two]
-  lia_matrix[subunit_one, subunit_two] = np.count_nonzero(
-      interaction_submatrix)
+    lis.append(mean_lis_matrix[i, j])
 
-  i_lis = np.sqrt(
-      mean_lis_matrix[subunit_one, subunit_two] * mean_clis_matrix[
-        subunit_one, subunit_two])
+    # Submatrix for LIS-based local interactions (binary)
+    interaction_submatrix = lia_map[start_one:end_one, start_two:end_two]
+    lia.append(np.count_nonzero(interaction_submatrix))
 
-  return (i_lis, mean_lis_matrix[subunit_one, subunit_two],
-          lia_matrix[subunit_one, subunit_two])
+    i_lis.append(np.sqrt(
+        mean_lis_matrix[i, j] * mean_clis_matrix[
+          i, j]))
+
+  return np.mean(i_lis), np.mean(lis), np.mean(lia)
