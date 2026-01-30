@@ -5,6 +5,7 @@ import os
 import re
 import statistics
 import sys
+from typing import Tuple
 
 import tqdm
 
@@ -63,6 +64,10 @@ def main(argv: list[str] = None):
                       default=r"([\w-]+)__([\w-]+)_summary_confidences",
                       help="Regular expression to obtain bait/target names based on confidence filename "
                            " (default: %(default)s)")
+  parser.add_argument('-1', '--sequence1', type=int, default=1,
+                      help="Index of sequence one in the *_data.json file (default: %(default)s)")
+  parser.add_argument('-2', '--sequence2', type=int, default=2,
+                      help="Index of sequence two in the *_data.json file (default: %(default)s)")
   parser.add_argument('-p', '--progress', action="store_true", default=False,
                       help="Show progress bar")
   parser.add_argument('-M', '--mapping', type=readable_file,
@@ -78,7 +83,10 @@ def main(argv: list[str] = None):
 
   af3_score(input_dir=args.input, output_file=args.output,
             name=args.name,
-            metrics=args.metrics, progress=args.progress,
+            metrics=args.metrics,
+            sequence_one=args.sequence1 - 1,
+            sequence_two=args.sequence2 - 1,
+            progress=args.progress,
             mapping_file=args.mapping,
             source_column=args.source_column - 1,
             converted_column=args.converted_column - 1)
@@ -86,7 +94,9 @@ def main(argv: list[str] = None):
 
 def af3_score(input_dir: str = "",
     output_file: str = "-", name: str = r"([\w-]+)__([\w-]+)",
-    metrics: list[str] = None, progress: bool = False,
+    metrics: list[str] = None,
+    sequence_one: int = 0, sequence_two: int = 1,
+    progress: bool = False,
     mapping_file: str = None, source_column: int = 0,
     converted_column: int = 1):
   """
@@ -96,6 +106,8 @@ def af3_score(input_dir: str = "",
   :param output_file: output file
   :param name: regular expression to obtain protein/gene names based on confidence filename
   :param metrics: metrics to output
+  :param sequence_one: index of sequence one in the *_data.json file
+  :param sequence_two: index of sequence two in the *_data.json file
   :param progress: if True, show progress bar
   :param mapping_file: tab delimited text file used to convert names
   :param source_column: column index of source names in mapping file
@@ -140,18 +152,22 @@ def af3_score(input_dir: str = "",
       bait = mappings[bait] if bait in mappings else bait
       target = mappings[target] if target in mappings else target
       output_file_out.write(f"{bait}\t{target}")
-      scores = get_confidence_scores(confidence_file, metrics)
+      sequence_one_index, sequence_two_index = get_sequence_index(confidence_file, sequence_one, sequence_two)
+      scores = get_confidence_scores(confidence_file, metrics, sequence_one_index, sequence_two_index)
       for score in scores:
         output_file_out.write(f"\t{score}")
       output_file_out.write("\n")
 
 
-def get_confidence_scores(confidence_file: str, metrics: list[str] = None) -> list[float]:
+def get_confidence_scores(confidence_file: str, metrics: list[str] = None,
+    sequence_one: int = 0, sequence_two: int = 1) -> list[float]:
   """
   Returns confidence scores for given metrics
 
   :param confidence_file: confidence JSON file
   :param metrics: metrics to obtain confidence scores
+  :param sequence_one: index of sequence one
+  :param sequence_two: index of sequence two
   :return: confidence scores
   """
   if metrics is None:
@@ -182,7 +198,8 @@ def get_confidence_scores(confidence_file: str, metrics: list[str] = None) -> li
         model_confidence_file.replace("confidences.json", "model.cif") for
         model_confidence_file in model_confidence_files]
       model_lis = [Af3LocalInteractionScore.local_interaction_score(
-          model_confidence_files[i], structure_files[i]) for i in
+          model_confidence_files[i], structure_files[i],
+          subunit_one=sequence_one, subunit_two=sequence_two) for i in
         range(0, len(model_confidence_files))]
       i_lis = statistics.mean([m_lis[0] for m_lis in model_lis])
       lis = statistics.mean([m_lis[1] for m_lis in model_lis])
@@ -194,9 +211,37 @@ def get_confidence_scores(confidence_file: str, metrics: list[str] = None) -> li
       structure = confidence_file.replace("_summary_confidences.json",
                                           "_model.cif")
       i_lis, lis, lia = Af3LocalInteractionScore.local_interaction_score(
-          lis_json, structure)
+          lis_json, structure, subunit_one=sequence_one, subunit_two=sequence_two)
       scores.extend([i_lis, lis, lia])
   return scores
+
+
+def get_sequence_index(confidence_file: str,
+    sequence_one: int = 0, sequence_two: int = 1) -> Tuple[int, int]:
+  """
+  Returns index of sequence one and two from the *_data.json file for the *_confidences.json and *_model.cif files.
+
+  :param confidence_file: confidence JSON file
+  :param sequence_one: index of sequence one in the *_data.json file
+  :param sequence_two: index of sequence two in the *_data.json file
+  :return:
+  """
+  data_json = confidence_file.replace("_summary_confidences.json",
+                                     "_data.json")
+  confidences_json = confidence_file.replace("_summary_confidences.json",
+                                      "_confidences.json")
+  with open(data_json, 'r') as data_json_in:
+    data = json.load(data_json_in)
+  with open(confidences_json, 'r') as confidences_json_in:
+    confidences = json.load(confidences_json_in)
+  sequence_ids = list(dict.fromkeys(confidences["atom_chain_ids"]))
+  sequence_type = list(data["sequences"][sequence_one].keys())[0]
+  sequence_id = data["sequences"][sequence_one][sequence_type]["id"]
+  sequence_one_index = sequence_ids.index(sequence_id)
+  sequence_type = list(data["sequences"][sequence_two].keys())[0]
+  sequence_id = data["sequences"][sequence_two][sequence_type]["id"]
+  sequence_two_index = sequence_ids.index(sequence_id)
+  return sequence_one_index, sequence_two_index
 
 
 def parse_mapping(mapping_file: str, source_column: int = 0,
