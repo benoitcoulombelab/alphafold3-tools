@@ -1,10 +1,9 @@
 import argparse
 import json
 import os
-import random
 import re
 import sys
-from typing import TextIO, Any
+from typing import TextIO
 
 from Bio import SeqIO, SeqRecord
 
