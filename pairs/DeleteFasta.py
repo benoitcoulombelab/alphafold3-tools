@@ -19,15 +19,15 @@ def dir_path(string: str):
 def main(argv: list[str] = None):
   parser = argparse.ArgumentParser(
       description="Deletes FASTA files that fails any specified limits.")
-  parser.add_argument('inputs', nargs='*',
+  parser.add_argument("inputs", nargs="*",
                       help="FASTA files")
-  parser.add_argument('-s', '--sequence', action='store_true',
+  parser.add_argument("-s", "--sequence", action="store_true",
                       help="Sequence must be valid")
-  parser.add_argument('-l', '--length', type=int, default=None,
+  parser.add_argument("-l", "--length", type=int, default=None,
                       help="Maximum length")
-  parser.add_argument('-v', '--verbose', action='store_true',
+  parser.add_argument("-v", "--verbose", action="store_true",
                       help="Verbose - show name of delete FASTA files")
-  parser.add_argument('-b', '--backup', type=dir_path, default=None,
+  parser.add_argument("-b", "--backup", type=dir_path, default=None,
                       help="Copy FASTA files that are to be deleted to this folder for backup")
 
   args = parser.parse_args(argv)
@@ -86,5 +86,5 @@ def parse_fasta(fasta: str) -> list[SeqRecord]:
   return sequences
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
   main()
