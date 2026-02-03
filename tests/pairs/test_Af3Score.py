@@ -30,14 +30,14 @@ def create_alphafold3_files(alphafold_output, name):
                   f"{name}_model.cif",
                   f"{name}_summary_confidences.json", "ranking_scores.csv",
                   "TERMS_OF_USE.md"]
-  [open(os.path.join(alphafold_output, file), 'w') for file in create_files]
+  [open(os.path.join(alphafold_output, file), "w") for file in create_files]
   sample_folders = ["seed-1_sample-0", "seed-1_sample-1", "seed-1_sample-2",
                     "seed-1_sample-3", "seed-1_sample-4"]
   create_sample_files = ["confidences.json", "model.cif",
                          "summary_confidences.json"]
   for sample_folder in sample_folders:
     os.mkdir(os.path.join(alphafold_output, sample_folder))
-    [open(os.path.join(alphafold_output, sample_folder, file), 'w') for file in
+    [open(os.path.join(alphafold_output, sample_folder, file), "w") for file in
      create_sample_files]
 
 
@@ -380,7 +380,7 @@ def test_get_sequence_index(testdir, mock_testclass):
 
 def test_parse_mapping(testdir, mock_testclass):
   mapping_file = "mapping_file.txt"
-  with open(mapping_file, 'w') as mapping_out:
+  with open(mapping_file, "w") as mapping_out:
     mapping_out.write("RPB1_HUMAN\tPOLR2A\n")
     mapping_out.write("NOGENE_HUMAN\t\n")
     mapping_out.write("RPB2_HUMAN\tPOLR2B\n")
@@ -399,7 +399,7 @@ def test_parse_mapping_stdin(testdir, mock_testclass, monkeypatch):
   mapping_file_content = ("RPB1_HUMAN\tPOLR2A\n"
                           "NOGENE_HUMAN\t\n"
                           "RPB2_HUMAN\tPOLR2B\n")
-  monkeypatch.setattr('sys.stdin', io.StringIO(mapping_file_content))
+  monkeypatch.setattr("sys.stdin", io.StringIO(mapping_file_content))
   mappings = Af3Score.parse_mapping("-")
   assert "rpb1_human" in mappings
   assert mappings["rpb1_human"] == "POLR2A"
