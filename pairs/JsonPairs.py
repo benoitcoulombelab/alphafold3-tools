@@ -92,7 +92,7 @@ def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
     bait_id = re.sub(r"[^A-Za-z]", "", bait.split("_")[0])
     if bait_id == sequence_id:
       bait_id = bait_id + "B"
-    bait_data = {"protein": {"id": bait_id, "sequence": str(baits[bait].seq), "description": bait}}
+    bait_data = {"protein": {"id": bait_id, "sequence": str(baits[bait].seq)}}
     for target in targets:
       if skip_identity and bait == target:
         continue
@@ -103,7 +103,7 @@ def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
       while target_id in [bait_id, sequence_id]:
         target_id = target_id + "T"
       target_data = {
-        "protein": {"id": target_id, "sequence": str(targets[target].seq), "description": target}}
+        "protein": {"id": target_id, "sequence": str(targets[target].seq)}}
       merge_id = f"{bait}__{target}"
       processed_ids.add(merge_id)
       sequences = [bait_data, target_data]
