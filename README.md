@@ -94,5 +94,5 @@ For LIS and Best LIS scores, see [AFM-LIS](https://github.com/flyark/AFM-LIS)
 af3-score \
     -i structures \
     -o interaction-scores.txt \
-    -m iptm,lis
+    -m iptm lis
 ```
