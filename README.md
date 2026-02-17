@@ -91,7 +91,7 @@ For ipTM, pTM and ranking scores, see [Confidence Metrics for AlphaFold 3](https
 For LIS and Best LIS scores, see [AFM-LIS](https://github.com/flyark/AFM-LIS)
 
 ```shell
-af3-score \
+sbatch af3-score.sh \
     -i structures \
     -o interaction-scores.txt \
     -m iptm lis
