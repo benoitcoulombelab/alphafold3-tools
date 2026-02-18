@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --account=def-coulomb
 #SBATCH --time=1-00:00:00
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=30G
+#SBATCH --cpus-per-task=24
+#SBATCH --mem=90G
 #SBATCH --output=af3-score-%A.out
 
 # Exit when any command fails
@@ -14,8 +14,9 @@ then
   script_path=$(dirname "$(scontrol show job "$SLURM_JOB_ID" | awk -F '=' '$0 ~ /Command=/ {print $2; exit}')")
 fi
 export SCRIPT_PATH="$script_path"
+threads=${SLURM_CPUS_PER_TASK:-1}
 
 source "${script_path}/pairs-env/bin/activate"
 
-echo "Running af3-score with parameters $*"
-af3-score "$@"
+echo "Running af3-score with parameters --threads $threads $*"
+af3-score --threads "$threads" "$@"
