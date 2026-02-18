@@ -8,7 +8,7 @@ if [[ -n "$CC_CLUSTER" ]]
 then
   module purge
   module load StdEnv/2023
-  module load python/3.13.2
+  module load python/3.14.2
 fi
 
 rm -rf ./pairs-env
