@@ -1,3 +1,4 @@
+import concurrent.futures
 import shutil
 import io
 import os
@@ -50,7 +51,7 @@ def test_main(testdir, mock_testclass):
       metrics=["iptm"],
       sequence_one=0, sequence_two=1,
       progress=False,
-      mapping_file=None, source_column=0, converted_column=1)
+      mapping_file=None, source_column=0, converted_column=1, threads=1)
 
 
 def test_main_parameters(testdir, mock_testclass):
@@ -63,18 +64,20 @@ def test_main_parameters(testdir, mock_testclass):
   sequence_two = 3
   source_column = 2
   converted_column = 3
+  threads = 2
   Af3Score.af3_score = MagicMock()
   Af3Score.main(
       ["-i", str(testdir), "-o", output, "-m", metrics[0], metrics[1], "-n",
        name, "-1", str(sequence_one), "-2", str(sequence_two), "-p",
        "-M", mapping, "-S", str(source_column + 1), "-C",
-       str(converted_column + 1)])
+       str(converted_column + 1), "-t", str(threads)])
   Af3Score.af3_score.assert_called_once_with(
       input_dir=str(testdir), output_file=output, name=name,
       metrics=metrics,
-      sequence_one=1, sequence_two=2,
+      sequence_one=sequence_one - 1, sequence_two=sequence_two - 1,
       progress=True,
-      mapping_file=mapping, source_column=2, converted_column=3)
+      mapping_file=mapping, source_column=source_column, converted_column=converted_column,
+      threads=threads)
 
 
 def test_main_long_parameters(testdir, mock_testclass):
@@ -87,19 +90,21 @@ def test_main_long_parameters(testdir, mock_testclass):
   sequence_two = 3
   source_column = 2
   converted_column = 3
+  threads = 2
   Af3Score.af3_score = MagicMock()
   Af3Score.main(
       ["--input", str(testdir), "--output", output, "--metric", metrics[0],
        metrics[1],
        "--name", name, "--sequence1", str(sequence_one), "--sequence2", str(sequence_two), "--progress",
        "--mapping", mapping, "--source_column", str(source_column + 1),
-       "--converted_column", str(converted_column + 1)])
+       "--converted_column", str(converted_column + 1), "--threads", str(threads)])
   Af3Score.af3_score.assert_called_once_with(
       input_dir=str(testdir), output_file=output, name=name,
       metrics=metrics,
-      sequence_one=1, sequence_two=2,
+      sequence_one=sequence_one - 1, sequence_two=sequence_two - 1,
       progress=True,
-      mapping_file=mapping, source_column=2, converted_column=3)
+      mapping_file=mapping, source_column=source_column, converted_column=converted_column,
+      threads=threads)
 
 
 def test_main_no_metrics(testdir, mock_testclass):
@@ -124,7 +129,9 @@ def test_af3_score(testdir, mock_testclass):
   Af3Score.get_sequence_index = MagicMock(side_effect=[[0, 1], [3, 2]])
   Af3Score.get_confidence_scores = MagicMock(side_effect=[[0.7772], [0.7601]])
   Af3Score.parse_mapping = MagicMock()
-  Af3Score.af3_score(output_file=output)
+  executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+  with patch("concurrent.futures.ProcessPoolExecutor", return_value=executor):
+    Af3Score.af3_score(output_file=output)
   Af3Score.get_sequence_index.assert_any_call(confidence_file_1, 0, 1)
   Af3Score.get_sequence_index.assert_any_call(confidence_file_2, 0, 1)
   Af3Score.get_confidence_scores.assert_any_call(confidence_file_1, ["iptm"], 0, 1)
@@ -157,10 +164,12 @@ def test_af3_score_parameters(testdir, mock_testclass):
   Af3Score.get_confidence_scores = MagicMock(side_effect=[[0.7772, 0.7059, 0.8952],
                                                           [0.7601, 0.783, 0.8985]])
   Af3Score.parse_mapping = MagicMock(return_value=mappings)
-  Af3Score.af3_score("confidences", output,
-                     r"([\w-]+)___([\w-]+)_summary_confidences",
-                     metrics, 1, 2, False, mappings_file,
-                     2, 3)
+  executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+  with patch("concurrent.futures.ProcessPoolExecutor", return_value=executor):
+    Af3Score.af3_score("confidences", output,
+                       r"([\w-]+)___([\w-]+)_summary_confidences",
+                       metrics, 1, 2, False, mappings_file,
+                       2, 3)
   Af3Score.get_sequence_index.assert_any_call(confidence_file_1, 1, 2)
   Af3Score.get_sequence_index.assert_any_call(confidence_file_2, 1, 2)
   Af3Score.get_confidence_scores.assert_any_call(confidence_file_1, metrics, 0, 1)
@@ -170,6 +179,41 @@ def test_af3_score_parameters(testdir, mock_testclass):
     assert output_in.readline() == "Bait\tTarget\tipTM\tpTM\tRanking score\n"
     assert output_in.readline() == "POLR2A\tPOLR2B\t0.7772\t0.7059\t0.8952\n"
     assert output_in.readline() == "POLR2A\tPOLR2C\t0.7601\t0.783\t0.8985\n"
+
+
+def test_af3_score_failure(testdir, mock_testclass):
+  testdir.mkdir("confidences")
+  confidence_file_1 = "confidences/RPB-1___RPB-2/RPB-1___RPB-2_summary_confidences.json"
+  confidence_file_2 = "confidences/RPB-1___RPB-3/RPB-1___RPB-3_summary_confidences.json"
+  Path(confidence_file_1).parent.mkdir()
+  Path(confidence_file_2).parent.mkdir()
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__hvm62_mouse_summary_confidences.json"),
+      confidence_file_1)
+  shutil.copy(Path(__file__).parent.joinpath(
+      "fab53__znrf1_mouse_summary_confidences.json"),
+      confidence_file_2)
+  output = "output.txt"
+  metrics = ["iptm", "ptm", "ranking_score"]
+  mappings_file = "mappings.txt"
+  Path(mappings_file).touch()
+  mappings = {"RPB-1": "POLR2A", "RPB-2": "POLR2B", "RPB-3": "POLR2C"}
+  Af3Score.get_sequence_index = MagicMock(side_effect=[[0, 1], [3, 2]])
+  Af3Score.get_confidence_scores = MagicMock(side_effect=[[0.7772, 0.7059, 0.8952],
+                                                          AssertionError("error on second call")])
+  Af3Score.parse_mapping = MagicMock(return_value=mappings)
+  executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+  with patch("concurrent.futures.ProcessPoolExecutor", return_value=executor):
+    with pytest.raises(AssertionError):
+      Af3Score.af3_score("confidences", output,
+                       r"([\w-]+)___([\w-]+)_summary_confidences",
+                       metrics, 1, 2, False, mappings_file,
+                       2, 3)
+  Af3Score.get_sequence_index.assert_any_call(confidence_file_1, 1, 2)
+  Af3Score.get_sequence_index.assert_any_call(confidence_file_2, 1, 2)
+  Af3Score.get_confidence_scores.assert_any_call(confidence_file_1, metrics, 0, 1)
+  Af3Score.get_confidence_scores.assert_any_call(confidence_file_2, metrics, 3, 2)
+  Af3Score.parse_mapping.assert_called_once_with(mappings_file, 2, 3)
 
 
 def test_af3_score_progress(testdir, mock_testclass):
@@ -188,10 +232,15 @@ def test_af3_score_progress(testdir, mock_testclass):
   Af3Score.get_sequence_index = MagicMock(side_effect=[[0, 1], [3, 2]])
   Af3Score.get_confidence_scores = MagicMock(side_effect=[[0.7772], [0.7601]])
   Af3Score.parse_mapping = MagicMock()
-  with patch("tqdm.tqdm", return_value=confidence_files) as mock_tqdm:
-    Af3Score.af3_score(output_file=output,
-                       progress=True)
-    mock_tqdm.assert_called_once_with(confidence_files)
+  tqdm_list = MagicMock()
+  with patch("tqdm.tqdm", return_value=tqdm_list) as mock_tqdm:
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    with patch("concurrent.futures.ProcessPoolExecutor", return_value=executor):
+      Af3Score.af3_score(output_file=output,
+                         progress=True)
+    mock_tqdm.assert_called_once_with(total=len(confidence_files))
+    assert tqdm_list.__enter__().update.call_count == 2
+    tqdm_list.__enter__().update.assert_any_call(1)
   Af3Score.get_sequence_index.assert_any_call(confidence_file_1, 0, 1)
   Af3Score.get_sequence_index.assert_any_call(confidence_file_2, 0, 1)
   Af3Score.get_confidence_scores.assert_any_call(confidence_file_1, ["iptm"], 0, 1)
