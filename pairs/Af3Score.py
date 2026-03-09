@@ -185,7 +185,9 @@ def executor_get_confidence_scores(confidence_file: str, metrics: list[str] = No
   :param metrics: metrics to obtain confidence scores
   :param sequence_one: index of sequence one in the *_data.json file
   :param sequence_two: index of sequence two in the *_data.json file
-  :return: confidence_file and confidence scores
+  :return: tuple containing (confidence_file, confidence_scores)
+  where confidence_file is the confidence_file input parameter
+  and confidence_scores is a list of confidence scores for the different metrics
   """
   sequence_one_index, sequence_two_index = get_sequence_index(confidence_file, sequence_one, sequence_two)
   scores = get_confidence_scores(confidence_file, metrics, sequence_one_index, sequence_two_index)
@@ -201,7 +203,7 @@ def get_confidence_scores(confidence_file: str, metrics: list[str] = None,
   :param metrics: metrics to obtain confidence scores
   :param sequence_one: index of sequence one
   :param sequence_two: index of sequence two
-  :return: confidence scores
+  :return: list of confidence scores for the different metrics
   """
   if metrics is None:
     metrics = [METRICS[0]]
@@ -252,12 +254,15 @@ def get_confidence_scores(confidence_file: str, metrics: list[str] = None,
 def get_sequence_index(confidence_file: str,
     sequence_one: int = 0, sequence_two: int = 1) -> Tuple[int, int]:
   """
-  Returns index of sequence one and two from the *_data.json file for the *_confidences.json and *_model.cif files.
+  Returns index of sequence one and two from the *_data.json file for the *_confidences.json and *_model.cif
+  files because the order of elements can differ between them.
 
   :param confidence_file: confidence JSON file
   :param sequence_one: index of sequence one in the *_data.json file
   :param sequence_two: index of sequence two in the *_data.json file
-  :return:
+  :return: tuple containing (sequence_one_index, sequence_two_index)
+  where sequence_one_index is the index of sequence one in the model files
+  and sequence_two_index is the index of sequence two in the model files
   """
   data_json = confidence_file.replace("_summary_confidences.json",
                                      "_data.json")
