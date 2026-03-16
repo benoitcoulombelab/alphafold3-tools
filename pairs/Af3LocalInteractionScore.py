@@ -133,7 +133,8 @@ def local_interaction_score(af3_json: str, af3_structure: str,
   :param subunit_two: identifier of second subunit
   :return: local interaction score between first subunit and second subunit
   """
-  json_data = json.load(open(af3_json, 'rb'))
+  with open(af3_json, 'rb') as file:
+    json_data = json.load(file)
 
   token_chain_ids = json_data['token_chain_ids']
   chain_residue_counts = Counter(token_chain_ids)
