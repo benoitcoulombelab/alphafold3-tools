@@ -3,6 +3,7 @@ import glob
 import json
 import os
 import re
+import logging
 import statistics
 import sys
 import concurrent.futures
@@ -189,7 +190,10 @@ def executor_get_confidence_scores(confidence_file: str, metrics: list[str] = No
   where confidence_file is the confidence_file input parameter
   and confidence_scores is a list of confidence scores for the different metrics
   """
+  logger = logging.getLogger("Af3Score")
+  logging.basicConfig(filename='af3score.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
   sequence_one_index, sequence_two_index = get_sequence_index(confidence_file, sequence_one, sequence_two)
+  logger.debug(f"Getting confidence scores for confidence file {confidence_file}")
   scores = get_confidence_scores(confidence_file, metrics, sequence_one_index, sequence_two_index)
   return confidence_file, scores
 
