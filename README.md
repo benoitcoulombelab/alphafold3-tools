@@ -70,7 +70,7 @@ When running multiple proteins pairs, chances are high that some jobs will fail.
 Before relaunching the data step, remove any JSON file that completed normally.
 
 ```shell
-bash alphafold3-clear-complete-data.sh
+bash clear-complete-data.sh
 ```
 
 Then relaunch the data step using the same command, see [Data step](#Data-step)
