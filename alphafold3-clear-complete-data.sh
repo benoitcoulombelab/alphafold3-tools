@@ -90,6 +90,8 @@ process_json() {
     then
       echo "Deleting file $input_json, output file $output_json is complete"
       rm -f "$input_json"
+    else
+      >&2 echo "Warning: '$output_json' is not a valid JSON file."
     fi
   fi
 }
