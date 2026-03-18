@@ -84,6 +84,15 @@ sbatch nextflow-inference.sh \
     --account $account
 ```
 
+When running multiple proteins pairs, chances are high that some jobs will fail.
+Before relaunching the inference step, remove any structure prediction that completed normally.
+
+```shell
+bash clear-complete-inference.sh
+```
+
+Then relaunch the inference step using the same command, see [Inference step](#Inference-step)
+
 ## Scoring protein-protein interactions
 
 For ipTM, pTM and ranking scores, see [Confidence Metrics for AlphaFold 3](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md#confidence-metrics)
