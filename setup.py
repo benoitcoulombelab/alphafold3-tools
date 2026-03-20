@@ -22,15 +22,15 @@ setup(
     ],
     entry_points={
       "console_scripts": [
-        "af3-score = pairs.Af3Score:main",
-        "delete-fasta = pairs.DeleteFasta:main",
-        "fasta-id = pairs.FastaId:main",
-        "fasta-to-json-sequence = pairs.FastaToJsonSequence:main",
-        "id-convert = pairs.IdConvert:main",
-        "json-pairs = pairs.JsonPairs:main",
-        "list-files = pairs.ListFiles:main",
-        "pair-sizes = pairs.PairSizes:main",
-        "split-fasta = pairs.SplitFasta:main",
+        "af3-score = af3tools.Af3Score:main",
+        "delete-fasta = af3tools.DeleteFasta:main",
+        "fasta-id = af3tools.FastaId:main",
+        "fasta-to-json-sequence = af3tools.FastaToJsonSequence:main",
+        "id-convert = af3tools.IdConvert:main",
+        "json-pairs = af3tools.JsonPairs:main",
+        "list-files = af3tools.ListFiles:main",
+        "pair-sizes = af3tools.PairSizes:main",
+        "split-fasta = af3tools.SplitFasta:main",
       ]
     }
 )

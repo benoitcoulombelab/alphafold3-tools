@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, ANY
 
 import pytest
 
-from pairs import PairSizes
+from af3tools import PairSizes
 
 
 @pytest.fixture

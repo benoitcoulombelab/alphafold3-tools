@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from pairs import FastaToJsonSequence, FastaId
+from af3tools import FastaToJsonSequence, FastaId
 
 
 @pytest.fixture

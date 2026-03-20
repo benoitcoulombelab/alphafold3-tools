@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, ANY
 import pytest
 from Bio import SeqIO
 
-from pairs import JsonPairs
+from af3tools import JsonPairs
 
 
 @pytest.fixture

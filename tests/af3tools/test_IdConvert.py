@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, ANY, patch
 
 import pytest
 
-from pairs import IdConvert
+from af3tools import IdConvert
 
 
 @pytest.fixture

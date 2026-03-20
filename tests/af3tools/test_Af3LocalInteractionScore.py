@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from pairs import Af3LocalInteractionScore
+from af3tools import Af3LocalInteractionScore
 
 
 @pytest.fixture

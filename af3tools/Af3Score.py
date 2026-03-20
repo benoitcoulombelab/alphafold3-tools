@@ -11,7 +11,7 @@ from typing import Tuple
 
 import tqdm
 
-from pairs import Af3LocalInteractionScore
+from af3tools import Af3LocalInteractionScore
 
 
 def readable_file(filepath: str):

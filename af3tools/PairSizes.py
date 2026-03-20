@@ -4,7 +4,7 @@ from typing import TextIO
 
 from Bio import SeqIO, SeqRecord
 
-from pairs import FastaId
+from af3tools import FastaId
 
 
 def dir_path(string: str):

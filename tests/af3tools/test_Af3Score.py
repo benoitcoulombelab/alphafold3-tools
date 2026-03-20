@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pairs import Af3Score, Af3LocalInteractionScore
+from af3tools import Af3Score, Af3LocalInteractionScore
 
 
 @pytest.fixture

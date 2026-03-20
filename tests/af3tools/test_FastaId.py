@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from pairs import FastaId
+from af3tools import FastaId
 
 
 @pytest.fixture

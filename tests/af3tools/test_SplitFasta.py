@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, ANY, patch
 import pytest
 from Bio.Seq import Seq
 
-from pairs import SplitFasta, FastaId
+from af3tools import SplitFasta, FastaId
 
 
 @pytest.fixture

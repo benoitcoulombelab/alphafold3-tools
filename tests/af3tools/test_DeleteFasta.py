@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from pairs import DeleteFasta
+from af3tools import DeleteFasta
 
 
 @pytest.fixture
