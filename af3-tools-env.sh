@@ -16,4 +16,4 @@ python3 -m venv ./af3-tools-env
 source ./af3-tools-env/bin/activate
 pip install .
 rm -r build
-rm -r af3-tools.egg-info
+rm -r af3_tools.egg-info
