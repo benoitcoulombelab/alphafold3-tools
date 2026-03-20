@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="pairs",
-    version="0.3",
+    name="af3-tools",
+    version="0.4",
     packages=find_packages(),
     author="Christian Poitras",
     author_email="christian.poitras@ircm.qc.ca",
     description="Find interactions using AlphaFold",
     keywords="bioinformatics, AlphaFold",
-    url="https://github.com/benoitcoulombelab/pairs.git",
+    url="https://github.com/benoitcoulombelab/alphafold3-tools.git",
     license="GNU General Public License version 3",
     classifiers=[
       "License :: OSI Approved :: GNU General Public License version 3"

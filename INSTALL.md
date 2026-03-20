@@ -8,9 +8,9 @@
    2. [Clone repository](#Clone-repository)
 3. [Updating scripts](#Updating-scripts)
 4. [After installing or updating the scripts](#After-installing-or-updating-the-scripts)
-   1. [`Update AlphaFold 3 requirements`](#Update-AlphaFold-3-requirements)
+   1. [Update AlphaFold 3 requirements](#Update-AlphaFold-3-requirements)
    2. [Download scripts from AlphaFold 3](#Download-scripts-from-AlphaFold-3)
-   3. [Creating python virtual environment for pairs](#Creating-python-virtual-environment-for-pairs)
+   3. [Creating python virtual environment for AlphaFold 3 tools](#Creating-python-virtual-environment-for-AlphaFold-3-tools)
 
 ## Prepare working environment
 
@@ -65,8 +65,8 @@ bash alphafold3-requirements.sh
 wget https://raw.githubusercontent.com/google-deepmind/alphafold3/refs/heads/main/fetch_databases.sh
 ```
 
-### Creating python virtual environment for pairs
+### Creating python virtual environment for AlphaFold 3 tools
 
 ```shell
-bash pairs-env.sh
+bash af3-tools-env.sh
 ```

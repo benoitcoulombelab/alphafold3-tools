@@ -16,7 +16,7 @@ fi
 export SCRIPT_PATH="$script_path"
 threads=${SLURM_CPUS_PER_TASK:-1}
 
-source "${script_path}/pairs-env/bin/activate"
+source "${script_path}/af3-tools-env/bin/activate"
 
 echo "Running af3-score with parameters --threads $threads $*"
 af3-score --threads "$threads" "$@"

@@ -3,4 +3,4 @@
 script_path=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 
 export PATH="$script_path":$PATH
-source "${script_path}/pairs-env/bin/activate"
+source "${script_path}/af3-tools-env/bin/activate"

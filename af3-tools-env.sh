@@ -11,9 +11,9 @@ then
   module load python/3.14.2
 fi
 
-rm -rf ./pairs-env
-python3 -m venv ./pairs-env
-source ./pairs-env/bin/activate
+rm -rf ./af3-tools-env
+python3 -m venv ./af3-tools-env
+source ./af3-tools-env/bin/activate
 pip install .
 rm -r build
-rm -r pairs.egg-info
+rm -r af3-tools.egg-info
