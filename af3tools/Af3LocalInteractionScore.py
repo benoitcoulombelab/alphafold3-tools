@@ -3,11 +3,15 @@ Code of this file was copied from https://github.com/flyark/AFM-LIS.
 """
 
 import json
+import logging
 from collections import Counter
 
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import pdist, squareform
+
+
+logger = logging.getLogger("Af3LocalInteractionScore")
 
 
 def transform_pae_matrix(pae_matrix, pae_cutoff):
@@ -134,7 +138,11 @@ def local_interaction_score(af3_json: str, af3_structure: str,
   :return: local interaction score between first subunit and second subunit
   """
   with open(af3_json, 'rb') as file:
-    json_data = json.load(file)
+    try:
+      json_data = json.load(file)
+    except json.decoder.JSONDecodeError as e:
+      logger.error(f"Error loading JSON file {file}")
+      raise e
 
   token_chain_ids = json_data['token_chain_ids']
   chain_residue_counts = Counter(token_chain_ids)
