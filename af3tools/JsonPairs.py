@@ -41,9 +41,12 @@ def main(argv: list[str] = None):
   parser.add_argument('-t', '--targets', type=readable_file, required=True,
                       help="FASTA file containing targets")
   parser.add_argument('-a', '--sequence', type=readable_file,
-                      help="Additional sequence element to add in JSON format.")
+                      help="Additional sequence element to add in JSON format.  (default: None)")
   parser.add_argument('-s', '--seed', type=int, nargs="*", default=None,
-                      help="Seed(s) to use for model inference.  (default: use random seed)")
+                      help="Seed(s) to use for model inference.  (default: use 1 random seed)")
+  parser.add_argument('-S', '--rseed', type=int, default=1,
+                      help="Number of random seed(s) to use for model inference. Ignored if '-s' is used.  "
+                           "(default: use 1 random seed)")
   parser.add_argument('-u', '--unique', action='store_true',
                       help="Save only one JSON file per pair "
                            "- do not save POLR2B-POLR2A pair if POLR2A-POLR2B is also present.")
@@ -55,13 +58,14 @@ def main(argv: list[str] = None):
 
   args = parser.parse_args(argv)
 
-  json_pairs(baits_file=args.baits, targets_file=args.targets, sequence_file=args.sequence, seeds=args.seed,
+  json_pairs(baits_file=args.baits, targets_file=args.targets, sequence_file=args.sequence,
+             seeds=args.seed, random_seeds=args.rseed,
              unique=args.unique, skip_identity=args.identity,
              output=args.output)
 
 
 def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
-    seeds: list[int] = None, unique: bool = False,
+    seeds: list[int] = None, random_seeds: int = 1, unique: bool = False,
     skip_identity: bool = False, output: str = ""):
   """
   Create JSON files, each one containing a protein pair, one protein from baits and one protein from targets file.
@@ -70,12 +74,16 @@ def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
   :param targets_file: FASTA file containing targets
   :param sequence_file: Additional sequence element to add in JSON format
   :param seeds: seeds to use for model inference
+  :param random_seeds: number of random seeds for model inference, ignored if seeds parameter is not None
   :param unique: save only one JSON file per unique pair -
                  do not save POLR2B-POLR2A pair if POLR2A-POLR2B is also present
   :param skip_identity: don't save JSON file of a protein with itself -
                         if the same protein is present in both baits and targets
   :param output: where to write JSON files
   """
+  if not seeds:
+    seeds = [random.randint(1,2147483647) for i in range(random_seeds)]
+
   with open(baits_file, "r") as baits_file_in:
     baits = parse_fasta(baits_file_in)
   with open(targets_file, "r") as targets_file_in:
@@ -111,8 +119,7 @@ def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
         sequences.append(sequence)
         merge_id = f"{merge_id}__{sequence_id}"
       json_data = {"name": merge_id,
-                   "modelSeeds": seeds if seeds else [random.randint(1,
-                                                                     2147483647)],
+                   "modelSeeds": seeds,
                    "dialect": "alphafold3", "version": 1,
                    "sequences": sequences}
       with open(os.path.join(output, f"{merge_id}.json"), 'w') as output_file:
