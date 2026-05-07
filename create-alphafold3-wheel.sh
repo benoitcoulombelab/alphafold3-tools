@@ -93,7 +93,8 @@ pip freeze --local > "${tmp_dir}/${requirements}"
 
 deactivate
 
+cp "run_alphafold.py" "$current_directory"
 cp "${tmp_dir}/${requirements}" "$current_directory"
 
 echo
-echo "Copied AlphaFold 3 wheel to $current_directory/$wheel and pip requirements to $current_directory/$requirements"
+echo "Copied AlphaFold 3 wheel '$wheel', 'run_alphafold.py' and pip requirements '$requirements'"
