@@ -31,7 +31,7 @@ echo -e "\n\nRun AlphaFold 3 inference pipeline on json ${json}\n\n"
 if [[ -n "$CC_CLUSTER" ]]
 then
   module purge
-  module load StdEnv/2023 hmmer/3.4 rdkit/2024.03.5 python/3.12 cuda/12.2 cudnn/9.2
+  module load StdEnv/2023 hmmer/3.4 rdkit/2025.09.4 python/3.13 cuda/12.9 cudnn/9.13.1.26
 
   echo "Create AlphaFold virtual environment in ${SLURM_TMPDIR}"
   venv="${SLURM_TMPDIR}/venv"
@@ -56,6 +56,7 @@ then
   export XLA_PYTHON_CLIENT_PREALLOCATE=false
   export TF_FORCE_UNIFIED_MEMORY=true
   export XLA_CLIENT_MEM_FRACTION=3.2
+  export JAX_TRACEBACK_FILTERING=off
 fi
 
 mkdir -p "${output}"
