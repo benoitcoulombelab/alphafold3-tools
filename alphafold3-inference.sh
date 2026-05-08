@@ -31,7 +31,7 @@ echo -e "\n\nRun AlphaFold 3 inference pipeline on json ${json}\n\n"
 if [[ -n "$CC_CLUSTER" ]]
 then
   module purge
-  module load StdEnv/2023 hmmer/3.4 rdkit/2025.09.4 python/3.13 cuda/12.9 cudnn/9.13.1.26
+  module load StdEnv/2023 hmmer-alphafold3/3.4 rdkit/2025.09.4 python/3.14
 
   echo "Create AlphaFold virtual environment in ${SLURM_TMPDIR}"
   venv="${SLURM_TMPDIR}/venv"
