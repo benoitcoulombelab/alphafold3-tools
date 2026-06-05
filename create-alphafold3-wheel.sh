@@ -10,14 +10,16 @@ current_directory=$(pwd)
 version=v3.0.2
 development=
 requirements=alphafold3-requirements.txt
+patch=
 
 # Usage function
 usage() {
   echo
   echo "Creates AlphaFold 3 python wheel"
   echo
-  echo "Usage: $script_name [-v <version>] [-d] [-r <requirements>] [-h]"
+  echo "Usage: $script_name [-v <version>] [-p <patch>] [-d] [-r <requirements>] [-h]"
   echo "  -v: Version (tag or commit hash) of AlphaFold 3 to create wheel for (default: v3.0.2)"
+  echo "  -p: Patch file to apply before creating wheel (default: none)"
   echo "  -d: Version is a development, '-dev' will be appended to the version (default: '-dev' not appended)"
   echo "  -r: PIP requirements output (default: alphafold3-requirements.txt)"
   echo "  -h: Show this help and squire Map help"
@@ -28,10 +30,13 @@ usage() {
 }
 
 # Parsing arguments.
-while getopts 'v:dr:h' OPTION; do
+while getopts 'v:p:dr:h' OPTION; do
   case "$OPTION" in
     v)
        version="$OPTARG"
+       ;;
+    p)
+       patch="$OPTARG"
        ;;
     d)
        development=true
@@ -54,6 +59,14 @@ while getopts 'v:dr:h' OPTION; do
   esac
 done
 
+# Validating arguments.
+if [[ -n "$patch" ]] && ! [[ -f "$patch" ]]
+then
+  >&2 echo "Error: -p parameter $patch is not a file."
+  usage
+  exit 1
+fi
+
 
 module purge
 module load StdEnv/2023
@@ -70,6 +83,11 @@ echo "Cloning AlphaFold 3 version $version"
 git clone https://github.com/google-deepmind/alphafold3.git "${tmp_dir}/alphafold3"
 cd "${tmp_dir}/alphafold3"
 git checkout "$version"
+if [[ -n "$patch" ]]
+then
+  echo "Applying patch $patch to AlphaFold 3 version $version"
+  git apply "$patch"
+fi
 if [[ -n "$development" ]]
 then
   sed -i 's/\(version = "[0-9.]*\)"/\1-dev"/' pyproject.toml
