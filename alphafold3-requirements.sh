@@ -9,7 +9,7 @@ cd "$script_path" || exit 1
 echo "Finding AlphaFold 3 requirements"
 
 module purge
-module load StdEnv/2023 hmmer-alphafold3/3.4 rdkit/2025.09.4 python/3.14
+module load StdEnv/2023 hmmer-alphafold3/3.4 rdkit/2025.09.4 python/3.13
 
 wget -O run_alphafold.py https://raw.githubusercontent.com/google-deepmind/alphafold3/refs/tags/v3.0.2/run_alphafold.py
 

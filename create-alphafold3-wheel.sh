@@ -70,7 +70,7 @@ fi
 
 module purge
 module load StdEnv/2023
-module load rdkit/2025.09.4 python/3.14 cmake
+module load rdkit/2025.09.4 python/3.13 cmake
 
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/$(basename "$0").XXXXXXXXXXXX")
 trap 'rm -rf "$tmp_dir"; exit' ERR EXIT
