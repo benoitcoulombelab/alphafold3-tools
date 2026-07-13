@@ -107,6 +107,7 @@ fi
 echo "Creating pip requirements file"
 cp "$wheel" "$current_directory"
 pip install --no-index "$current_directory/$wheel"
+build_data
 pip freeze --local > "${tmp_dir}/${requirements}"
 
 deactivate
