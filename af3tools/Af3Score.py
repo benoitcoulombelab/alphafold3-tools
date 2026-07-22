@@ -135,6 +135,8 @@ def af3_score(input_dir: str = "",
   confidence_files = sorted(
       glob.glob("**/*_summary_confidences.json", root_dir=input_dir,
                 recursive=True))
+  seed_pattern = re.compile(r"seed-\d+_sample-\d+")
+  confidence_files = [confidence_file for confidence_file in confidence_files if not seed_pattern.search(confidence_file)]
   confidence_files = [os.path.join(input_dir, confidence_file) for
                       confidence_file in confidence_files]
   mappings = {}
@@ -194,9 +196,13 @@ def executor_get_confidence_scores(confidence_file: str, metrics: list[str] = No
   and confidence_scores is a list of confidence scores for the different metrics
   """
   logging.basicConfig(filename='af3score.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-  sequence_one_index, sequence_two_index = get_sequence_index(confidence_file, sequence_one, sequence_two)
-  scores = get_confidence_scores(confidence_file, metrics, sequence_one_index, sequence_two_index)
-  return confidence_file, scores
+  try:
+    sequence_one_index, sequence_two_index = get_sequence_index(confidence_file, sequence_one, sequence_two)
+    scores = get_confidence_scores(confidence_file, metrics, sequence_one_index, sequence_two_index)
+    return confidence_file, scores
+  except Exception as e:
+    logger.exception(f"Error processing confidence file {confidence_file}", exc_info=e)
+    raise e
 
 
 def get_confidence_scores(confidence_file: str, metrics: list[str] = None,
