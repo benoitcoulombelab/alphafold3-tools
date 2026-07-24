@@ -11,6 +11,7 @@ then
   module load python/3.14.2
 fi
 
+wget https://raw.githubusercontent.com/flyark/AFM-LIS/refs/heads/main/lis.py
 rm -rf ./af3-tools-env
 python3 -m venv ./af3-tools-env
 source ./af3-tools-env/bin/activate
