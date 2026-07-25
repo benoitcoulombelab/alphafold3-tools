@@ -237,9 +237,9 @@ def get_confidence_scores(confidence_file: str, metrics: list[str] = None,
   scores = []
   for metric in metrics:
     if "iptm" == metric:
-      scores.append(max([lis.iptm for lis in confidences]))
+      scores.append(statistics.mean([lis.iptm for lis in confidences]))
     elif "ptm" == metric:
-      scores.append(max([lis.ptm for lis in confidences]))
+      scores.append(statistics.mean([lis.ptm for lis in confidences]))
     elif "lis" == metric:
       scores.append(statistics.mean([lis.ilis for lis in confidences]))
       scores.append(statistics.mean([lis.lis for lis in confidences]))

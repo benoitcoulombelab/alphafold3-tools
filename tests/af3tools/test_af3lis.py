@@ -320,7 +320,7 @@ def test_get_confidence_scores_iptm(testdir, mock_testclass):
     "fab53__hvm62_mouse_summary_confidences.json"),
     confidence_file)
   all_lis = [
-    af3lis.LIS("POLR2A__POLR2B", "POLR", "POLRB", 0.2, 0.12, 12300, 0.76, 0.3),
+    af3lis.LIS("POLR2A__POLR2B", "POLR", "POLRB", 0.2, 0.12, 12300, 0.7, 0.3),
     af3lis.LIS("POLR2A__POLR2B", "POLRB", "POLR", 0.2, 0.12, 12300, 0.2, 0.3),
     af3lis.LIS("POLR2A__POLR2C", "POLRB", "POLR", 0.2, 0.12, 12300, 0.9, 0.3),
     af3lis.LIS("POLR2A__POLR2B", "POLRC", "POLR", 0.2, 0.12, 12300, 0.9, 0.3),
@@ -329,7 +329,8 @@ def test_get_confidence_scores_iptm(testdir, mock_testclass):
   cf, scores = af3lis.get_confidence_scores(confidence_file, ["iptm"], all_lis)
   af3lis.get_sequence_ids.assert_called_once_with(confidence_file, 0, 1)
   assert cf == confidence_file
-  assert scores == [0.76]
+  assert len(scores) == 1
+  assert scores[0] == pytest.approx(0.45)
 
 
 def test_get_confidence_scores_ptm(testdir, mock_testclass):
@@ -348,7 +349,8 @@ def test_get_confidence_scores_ptm(testdir, mock_testclass):
   cf, scores = af3lis.get_confidence_scores(confidence_file, ["ptm"], all_lis)
   af3lis.get_sequence_ids.assert_called_once_with(confidence_file, 0, 1)
   assert cf == confidence_file
-  assert scores == [0.8]
+  assert len(scores) == 1
+  assert scores[0] == pytest.approx(0.55)
 
 
 def test_get_confidence_scores_lis(testdir, mock_testclass):
@@ -374,6 +376,7 @@ def test_get_confidence_scores_lis(testdir, mock_testclass):
   cf, scores = af3lis.get_confidence_scores(confidence_file, ["lis"], all_lis)
   af3lis.get_sequence_ids.assert_called_once_with(confidence_file, 0, 1)
   assert cf == confidence_file
+  assert len(scores) == 3
   assert scores[0] == pytest.approx(0.2)
   assert scores[1] == pytest.approx(0.15)
   assert scores[2] == pytest.approx(11000)
@@ -386,7 +389,7 @@ def test_get_confidence_scores_iptm_ptm(testdir, mock_testclass):
     "fab53__hvm62_mouse_summary_confidences.json"),
     confidence_file)
   all_lis = [
-    af3lis.LIS("POLR2A__POLR2B", "POLR", "POLRB", 0.2, 0.12, 12300, 0.76, 0.3),
+    af3lis.LIS("POLR2A__POLR2B", "POLR", "POLRB", 0.2, 0.12, 12300, 0.7, 0.3),
     af3lis.LIS("POLR2A__POLR2B", "POLRB", "POLR", 0.2, 0.12, 12300, 0.2, 0.8),
     af3lis.LIS("POLR2A__POLR2C", "POLRB", "POLR", 0.2, 0.12, 12300, 0.9, 0.9),
     af3lis.LIS("POLR2A__POLR2B", "POLRC", "POLR", 0.2, 0.12, 12300, 0.9, 0.9),
@@ -396,7 +399,9 @@ def test_get_confidence_scores_iptm_ptm(testdir, mock_testclass):
                                             all_lis)
   af3lis.get_sequence_ids.assert_called_once_with(confidence_file, 0, 1)
   assert cf == confidence_file
-  assert scores == [0.76, 0.8]
+  assert len(scores) == 2
+  assert scores[0] == pytest.approx(0.45)
+  assert scores[1] == pytest.approx(0.55)
 
 
 def test_get_confidence_scores_ptm_iptm(testdir, mock_testclass):
@@ -406,7 +411,7 @@ def test_get_confidence_scores_ptm_iptm(testdir, mock_testclass):
     "fab53__hvm62_mouse_summary_confidences.json"),
     confidence_file)
   all_lis = [
-    af3lis.LIS("POLR2A__POLR2B", "POLR", "POLRB", 0.2, 0.12, 12300, 0.76, 0.3),
+    af3lis.LIS("POLR2A__POLR2B", "POLR", "POLRB", 0.2, 0.12, 12300, 0.7, 0.3),
     af3lis.LIS("POLR2A__POLR2B", "POLRB", "POLR", 0.2, 0.12, 12300, 0.2, 0.8),
     af3lis.LIS("POLR2A__POLR2C", "POLRB", "POLR", 0.2, 0.12, 12300, 0.9, 0.9),
     af3lis.LIS("POLR2A__POLR2B", "POLRC", "POLR", 0.2, 0.12, 12300, 0.9, 0.9),
@@ -416,7 +421,9 @@ def test_get_confidence_scores_ptm_iptm(testdir, mock_testclass):
                                             all_lis)
   af3lis.get_sequence_ids.assert_called_once_with(confidence_file, 0, 1)
   assert cf == confidence_file
-  assert scores == [0.8, 0.76]
+  assert len(scores) == 2
+  assert scores[0] == pytest.approx(0.55)
+  assert scores[1] == pytest.approx(0.45)
 
 
 def test_get_confidence_scores_empty_metrics(testdir, mock_testclass):
