@@ -87,6 +87,11 @@ process_json() {
   output_directory="${inference_folder}/${json_filename}"
   for output_json in "$output_directory"/**/*.json
   do
+    if [[ $output_json =~ .*/\*\*/\*\.json ]]
+    then
+      # Skip as no output JSON files exists for input.
+      continue
+    fi
     output_json_exists="true"
     python -mjson.tool "$output_json" > /dev/null 2>&1
     output_json_validation_result=$?
