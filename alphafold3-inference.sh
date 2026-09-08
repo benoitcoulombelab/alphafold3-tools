@@ -2,8 +2,8 @@
 #SBATCH --account=def-coulomb
 #SBATCH --time=1-00:00:00
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=32G
-#SBATCH --gpus=a100:1
+#SBATCH --mem=30G
+#SBATCH --gpus=h100:1
 #SBATCH --mail-type=NONE
 #SBATCH --output=alphafold3-inference-%A.out
 
@@ -49,10 +49,10 @@ then
   export XLA_FLAGS="--xla_gpu_enable_triton_gemm=false"
 
   # https://github.com/google-deepmind/alphafold3/blob/main/docs/performance.md#gpu-memory
-  # For 3,000 tokens or less on A100 40GB.
+  # For 5,000? tokens or less on H100 40GB.
   #export XLA_PYTHON_CLIENT_PREALLOCATE=true
   #export XLA_CLIENT_MEM_FRACTION=0.95
-  # For more than 3000 tokens on A100 40GB.
+  # For more than 5000? tokens on H100 40GB.
   export XLA_PYTHON_CLIENT_PREALLOCATE=false
   export TF_FORCE_UNIFIED_MEMORY=true
   export XLA_CLIENT_MEM_FRACTION=3.2
