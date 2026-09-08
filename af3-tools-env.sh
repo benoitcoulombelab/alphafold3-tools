@@ -12,6 +12,7 @@ then
 fi
 
 wget https://raw.githubusercontent.com/flyark/AFM-LIS/refs/heads/main/lis.py
+chmod 750 lis.py
 rm -rf ./af3-tools-env
 python3 -m venv ./af3-tools-env
 source ./af3-tools-env/bin/activate
