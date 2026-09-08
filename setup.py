@@ -29,6 +29,7 @@ setup(
       "fasta-to-json-sequence = af3tools.FastaToJsonSequence:main",
       "id-convert = af3tools.IdConvert:main",
       "json-pairs = af3tools.JsonPairs:main",
+      "lis-features = af3tools.LisFeatures:main",
       "list-files = af3tools.ListFiles:main",
       "pair-sizes = af3tools.PairSizes:main",
       "split-fasta = af3tools.SplitFasta:main",
