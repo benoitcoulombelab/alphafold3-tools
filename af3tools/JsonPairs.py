@@ -13,7 +13,7 @@ from af3tools import FastaId
 def readable_file(filepath: str):
   """Checks if a file exists and is readable, or if it's "-" for stdin."""
   if filepath == "-":
-    return filepath # Special case for stdin/stdout path name
+    return filepath  # Special case for stdin/stdout path name
 
   if not os.path.exists(filepath):
     # Raise ArgumentTypeError to make argparse show a clean error message
@@ -25,6 +25,7 @@ def readable_file(filepath: str):
   # If all checks pass, return the original string (the filepath)
   return filepath
 
+
 def dir_path(string: str):
   if not string or os.path.isdir(string):
     return string
@@ -34,13 +35,13 @@ def dir_path(string: str):
 
 def main(argv: list[str] = None):
   parser = argparse.ArgumentParser(
-      description="Create JSON files for AlphaFold 3, each one containing a protein pair, "
-                  "one protein from baits and one protein from targets file.")
+    description="Create JSON files for AlphaFold 3, each one containing a protein pair, "
+                "one protein from baits and one protein from targets file.")
   parser.add_argument('-b', '--baits', type=readable_file, required=True,
                       help="FASTA file containing baits")
   parser.add_argument('-t', '--targets', type=readable_file, required=True,
                       help="FASTA file containing targets")
-  parser.add_argument('-a', '--sequence', type=readable_file,
+  parser.add_argument('-a', '--add', type=readable_file,
                       help="Additional sequence element to add in JSON format.  (default: None)")
   parser.add_argument('-s', '--seed', type=int, nargs="*", default=None,
                       help="Seed(s) to use for model inference.  (default: use 1 random seed)")
@@ -58,13 +59,14 @@ def main(argv: list[str] = None):
 
   args = parser.parse_args(argv)
 
-  json_pairs(baits_file=args.baits, targets_file=args.targets, sequence_file=args.sequence,
+  json_pairs(baits_file=args.baits, targets_file=args.targets,
+             add_file=args.add,
              seeds=args.seed, random_seeds=args.rseed,
              unique=args.unique, skip_identity=args.identity,
              output=args.output)
 
 
-def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
+def json_pairs(baits_file: str, targets_file: str, add_file: str = None,
     seeds: list[int] = None, random_seeds: int = 1, unique: bool = False,
     skip_identity: bool = False, output: str = ""):
   """
@@ -72,7 +74,7 @@ def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
 
   :param baits_file: FASTA file containing baits
   :param targets_file: FASTA file containing targets
-  :param sequence_file: Additional sequence element to add in JSON format
+  :param add_file: Additional sequence element to add in JSON format
   :param seeds: seeds to use for model inference
   :param random_seeds: number of random seeds for model inference, ignored if seeds parameter is not None
   :param unique: save only one JSON file per unique pair -
@@ -82,17 +84,17 @@ def json_pairs(baits_file: str, targets_file: str, sequence_file: str = None,
   :param output: where to write JSON files
   """
   if not seeds:
-    seeds = [random.randint(1,2147483647) for i in range(random_seeds)]
+    seeds = [random.randint(1, 2147483647) for i in range(random_seeds)]
 
   with open(baits_file, "r") as baits_file_in:
     baits = parse_fasta(baits_file_in)
   with open(targets_file, "r") as targets_file_in:
     targets = parse_fasta(targets_file_in)
-  sequence = ""
+  sequence = {}
   sequence_id = ""
-  if sequence_file:
-    with open(sequence_file, "r") as sequence_file_in:
-      sequence = json.load(sequence_file_in)
+  if add_file:
+    with open(add_file, "r") as add_file_in:
+      sequence = json.load(add_file_in)
       sequence_id = next(iter(sequence.values()))["id"]
 
   processed_ids = set()

@@ -1,18 +1,19 @@
 # [AlphaFold 3](https://github.com/google-deepmind/alphafold3) Tools
 
-Tools to run [AlphaFold 3](https://github.com/google-deepmind/alphafold3) using [Nextflow](https://www.nextflow.io) on [Alliance Canada](https://www.alliancecan.ca) servers.
+Tools to run [AlphaFold 3](https://github.com/google-deepmind/alphafold3)
+using [Nextflow](https://www.nextflow.io) on [Alliance Canada](https://www.alliancecan.ca) servers.
 
 To install the tools on Alliance Canada servers, see [INSTALL.md](INSTALL.md)
 
 ### Steps
 
 1. [Prepare working environment](#Prepare-working-environment)
-   1. [Set additional variables](#Set-additional-variables)
-   2. [Download AlphaFold 3 database](#Download-AlphaFold-3-database)
+    1. [Set additional variables](#Set-additional-variables)
+    2. [Download AlphaFold 3 database](#Download-AlphaFold-3-database)
 2. [Running AlphaFold 3](#Running-AlphaFold-3)
-   1. [Prepare JSON files](#Prepare-JSON-files)
-   2. [Data step](#Data-step)
-   3. [Inference step](#Inference-step)
+    1. [Prepare JSON files](#Prepare-JSON-files)
+    2. [Data step](#Data-step)
+    3. [Inference step](#Inference-step)
 3. [Scoring protein-protein interactions](#Scoring-protein-protein-interactions)
 
 ## Prepare working environment
@@ -57,6 +58,12 @@ mkdir json
 json-pairs --baits baits.fasta --targets targets.fasta --output json -u -i
 ```
 
+If you have additional an additional JSON element to add to the JSON files, use the `-a` parameter.
+
+```shell
+json-pairs --baits baits.fasta --targets targets.fasta --add drug.json --output json -u -i
+```
+
 ### Data step
 
 ```shell
@@ -66,8 +73,8 @@ sbatch nextflow-data.sh \
     --account $account
 ```
 
-When running multiple proteins pairs, chances are high that some jobs will fail.
-Before relaunching the data step, remove any JSON file that completed normally.
+When running multiple proteins pairs, chances are high that some jobs will fail. Before relaunching
+the data step, remove any JSON file that completed normally.
 
 ```shell
 bash clear-complete-data.sh
@@ -84,8 +91,8 @@ sbatch nextflow-inference.sh \
     --account $account
 ```
 
-When running multiple proteins pairs, chances are high that some jobs will fail.
-Before relaunching the inference step, remove any structure prediction that completed normally.
+When running multiple proteins pairs, chances are high that some jobs will fail. Before relaunching
+the inference step, remove any structure prediction that completed normally.
 
 ```shell
 bash clear-complete-inference.sh
@@ -95,13 +102,17 @@ Then relaunch the inference step using the same command, see [Inference step](#I
 
 ## Scoring protein-protein interactions
 
-For ipTM, pTM and ranking scores, see [Confidence Metrics for AlphaFold 3](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md#confidence-metrics)
+For ipTM, pTM and ranking scores,
+see [Confidence Metrics for AlphaFold 3](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md#confidence-metrics)
 
-For LIS and Best LIS scores, see [AFM-LIS](https://github.com/flyark/AFM-LIS)
+For iLIS scores, see [AFM-LIS](https://github.com/flyark/AFM-LIS)
 
 ```shell
-sbatch af3-score.sh \
-    -i structures \
-    -o interaction-scores.txt \
-    -m iptm lis
+sbatch lis.sh -d . structures
+```
+
+To get the names of baits and targets.
+
+```shell
+sbatch lis-features.sh -l structures_lis_analysis.csv -a structures -o "structures_lis_analysis_features.csv" -p
 ```

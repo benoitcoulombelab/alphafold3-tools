@@ -28,7 +28,7 @@ def test_main(testdir, mock_testclass):
   JsonPairs.json_pairs = MagicMock()
   JsonPairs.main(["-b", baits, "-t", targets])
   JsonPairs.json_pairs.assert_called_once_with(baits_file=ANY, targets_file=ANY,
-                                               sequence_file=None,
+                                               add_file=None,
                                                seeds=None,
                                                random_seeds=1,
                                                unique=False,
@@ -43,8 +43,8 @@ def test_main_parameters(testdir, mock_testclass):
   open(baits, 'w').close()
   targets = "targets.fasta"
   open(targets, 'w').close()
-  sequence = "additional_sequence.json"
-  open(sequence, 'w').close()
+  add_file = "additional_sequence.json"
+  open(add_file, 'w').close()
   seed1 = 12
   seed2 = 30
   random_seeds = 3
@@ -52,10 +52,11 @@ def test_main_parameters(testdir, mock_testclass):
   os.mkdir(output)
   JsonPairs.json_pairs = MagicMock()
   JsonPairs.main(
-      ["-b", baits, "-t", targets, "-a", sequence, "-s", str(seed1), str(seed2), "-S", str(random_seeds), "-u", "-i",
-       "-o", output])
+    ["-b", baits, "-t", targets, "-a", add_file, "-s", str(seed1), str(seed2),
+     "-S", str(random_seeds), "-u", "-i",
+     "-o", output])
   JsonPairs.json_pairs.assert_called_once_with(baits_file=ANY, targets_file=ANY,
-                                               sequence_file=sequence,
+                                               add_file=add_file,
                                                seeds=[seed1, seed2],
                                                random_seeds=random_seeds,
                                                unique=True,
@@ -70,8 +71,8 @@ def test_main_long_parameters(testdir, mock_testclass):
   open(baits, 'w').close()
   targets = "targets.fasta"
   open(targets, 'w').close()
-  sequence = "additional_sequence.json"
-  open(sequence, 'w').close()
+  add_file = "additional_sequence.json"
+  open(add_file, 'w').close()
   seed1 = 12
   seed2 = 30
   random_seeds = 3
@@ -79,10 +80,12 @@ def test_main_long_parameters(testdir, mock_testclass):
   os.mkdir(output)
   JsonPairs.json_pairs = MagicMock()
   JsonPairs.main(
-      ["--baits", baits, "--targets", targets, "--sequence", sequence, "--seed", str(seed1), str(seed2),
-       "--rseed", str(random_seeds), "--unique", "--identity", "--output", output])
+    ["--baits", baits, "--targets", targets, "--add", add_file, "--seed",
+     str(seed1), str(seed2),
+     "--rseed", str(random_seeds), "--unique", "--identity", "--output",
+     output])
   JsonPairs.json_pairs.assert_called_once_with(baits_file=ANY, targets_file=ANY,
-                                               sequence_file=sequence,
+                                               add_file=add_file,
                                                seeds=[seed1, seed2],
                                                random_seeds=random_seeds,
                                                unique=True,
@@ -212,7 +215,7 @@ def test_json_pairs(testdir, mock_testclass):
     assert json_data["sequences"][1]["protein"]["sequence"] == polr2g.seq
 
 
-def test_json_pairs_sequence(testdir, mock_testclass):
+def test_json_pairs_add(testdir, mock_testclass):
   baits = "baits.fasta"
   targets = "targets.fasta"
   polr2e_file = Path(__file__).parent.joinpath("P19388.fasta")
@@ -233,8 +236,9 @@ def test_json_pairs_sequence(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2g_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  sequence = str(Path(__file__).parent.joinpath("atp.json"))
-  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, sequence_file=sequence)
+  add_file = str(Path(__file__).parent.joinpath("atp.json"))
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets,
+                       add_file=add_file)
   assert os.path.isfile("RPAB1_HUMAN__RPB4_HUMAN__AP.json")
   with open("RPAB1_HUMAN__RPB4_HUMAN__AP.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -497,7 +501,8 @@ def test_json_pairs_seeds(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2g_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, seeds=[seed1, seed2])
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets,
+                       seeds=[seed1, seed2])
   assert os.path.isfile("RPAB1_HUMAN__RPB4_HUMAN.json")
   with open("RPAB1_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -747,7 +752,8 @@ def test_json_pairs_random_seeds(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2g_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, seeds=[seed1, seed2], random_seeds=2)
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets,
+                       seeds=[seed1, seed2], random_seeds=2)
   assert os.path.isfile("RPAB1_HUMAN__RPB4_HUMAN.json")
   with open("RPAB1_HUMAN__RPB4_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
@@ -960,7 +966,8 @@ def test_json_pairs_skip_identity(testdir, mock_testclass):
       shutil.copyfileobj(infile, output)
     with open(polr2i_file, "rb") as infile:
       shutil.copyfileobj(infile, output)
-  JsonPairs.json_pairs(baits_file=baits, targets_file=targets, skip_identity=True)
+  JsonPairs.json_pairs(baits_file=baits, targets_file=targets,
+                       skip_identity=True)
   assert os.path.isfile("RPAB1_HUMAN__RPB9_HUMAN.json")
   with open("RPAB1_HUMAN__RPB9_HUMAN.json", 'r') as json_file:
     json_data = json.load(json_file)
