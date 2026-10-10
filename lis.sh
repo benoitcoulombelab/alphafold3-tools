@@ -2,7 +2,7 @@
 #SBATCH --account=def-coulomb
 #SBATCH --time=1-00:00:00
 #SBATCH --cpus-per-task=24
-#SBATCH --mem=90G
+#SBATCH --mem=40G
 #SBATCH --output=lis-%A.out
 
 # Exit when any command fails
