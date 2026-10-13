@@ -114,5 +114,5 @@ sbatch lis.sh -d . structures
 To get the names of baits and targets.
 
 ```shell
-sbatch lis-features.sh -l structures_lis_analysis.csv -a structures -o "structures_lis_analysis_features.csv" -p
+sbatch lis-features.sh -l structures_lis_analysis.csv -a structures -o "structures_lis_analysis_features.csv"
 ```
