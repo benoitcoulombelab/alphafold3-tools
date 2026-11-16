@@ -80,8 +80,12 @@ process_json() {
   local json_filename
   json_filename=$(basename "$input_json")
   json_filename="${json_filename%.*}"
-  json_filename=$(tr "[:upper:]" "[:lower:]" <<< "$json_filename")
   local output_json="${data_folder}/${json_filename}/${json_filename}_data.json"
+  if ! [[ -f "$output_json" ]]; then
+    # Try filename in lowercase for AlphaFold 3.1
+    json_filename=$(tr "[:upper:]" "[:lower:]" <<< "$json_filename")
+    output_json="${data_folder}/${json_filename}/${json_filename}_data.json"
+  fi
   if [[ -s "$output_json" ]]
   then
     python -mjson.tool "$output_json" > /dev/null 2>&1
